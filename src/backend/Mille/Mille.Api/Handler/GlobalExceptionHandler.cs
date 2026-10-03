@@ -24,27 +24,28 @@ namespace Mille.Api.Handler
                 errors = valEx.Errors.GroupBy(e => e.PropertyName)
                     .ToDictionary(g => JsonNamingPolicy.CamelCase.ConvertName(g.Key), g => g.Select(e => e.ErrorMessage).ToArray());
             }
-            else if(exception is DomainException domainEx)
+            else if (exception is DomainException domainEx)
             {
                 statusCode = (int)HttpStatusCode.BadRequest;
-                message = domainEx.Message;
+                message = "Validation failed.";
+                errors = domainEx.Message;
             }
-            else if(exception is NotFoundException notFoundEx)
+            else if (exception is NotFoundException notFoundEx)
             {
                 statusCode = (int)HttpStatusCode.NotFound;
                 message = notFoundEx.Message;
             }
-            else if(exception is UnauthorizedAccessException authEx)
+            else if (exception is UnauthorizedAccessException authEx)
             {
                 statusCode = (int)HttpStatusCode.Unauthorized;
                 message = "Unauthorized access";
             }
-            else if(exception is DbUpdateConcurrencyException dbEx)
+            else if (exception is DbUpdateConcurrencyException dbEx)
             {
                 statusCode = (int)HttpStatusCode.Conflict;
                 message = "An unexpected error occurred. Please try again later.";
             }
-            else if(exception is Exception ex)
+            else if (exception is Exception ex)
             {
                 statusCode = (int)HttpStatusCode.InternalServerError;
                 message = ex.Message;
