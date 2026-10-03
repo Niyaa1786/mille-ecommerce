@@ -4,9 +4,8 @@ using System.Text;
 
 namespace Mille.Application.Features.Auth.DeleteAddress
 {
-    public class DeleteAddressRequest
+    public class DeleteAddressResponse
     {
-        public Guid UserId { get; set; }
-        public int AddressId { get; set; }
+        public string Message { get; set; } = "Address deleted successfully.";
     }
 }
