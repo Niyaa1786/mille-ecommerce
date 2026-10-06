@@ -19,4 +19,32 @@ namespace Mille.Application.Features.Orders.GetOrder
         public List<OrderStatusHistoryDto> StatusHistories { get; set; } = new();
         public PaymentDto? Payment { get; set; }
     }
+    public class OrderItemDto
+    {
+        public int Id { get; set; }
+        public Guid ProductVariantId { get; set; }
+        public string ProductName { get; set; } = string.Empty;
+        public string SKU { get; set; } = string.Empty;
+        public int Quantity { get; set; }
+        public decimal UnitPrice { get; set; }
+        public decimal Subtotal => Quantity * UnitPrice;
+    }
+    public class OrderStatusHistoryDto
+    {
+        public int Id { get; set; }
+        public string Status { get; set; } = string.Empty;
+        public string? Note { get; set; }
+        public DateTime CreatedAt { get; set; }
+    }
+    public class PaymentDto
+    {
+        public Guid Id { get; set; }
+        public string Method { get; set; } = string.Empty;
+        public decimal Amount { get; set; }
+        public string? TransactionId { get; set; }
+        public string? GatewayResponse { get; set; }
+        public string Status { get; set; } = string.Empty;
+        public DateTime? PaidAt { get; set; }
+        public DateTime CreatedAt { get; set; }
+    }
 }

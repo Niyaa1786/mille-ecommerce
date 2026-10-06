@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Mille.Application.Features.Auth.GetProfile
+namespace Mille.Application.Features.Users.GetProfile
 {
     public class GetProfileRequest
     {

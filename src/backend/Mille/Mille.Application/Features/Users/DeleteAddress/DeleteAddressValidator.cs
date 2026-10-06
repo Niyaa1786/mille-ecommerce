@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Mille.Application.Features.Auth.DeleteAddress
+namespace Mille.Application.Features.Users.DeleteAddress
 {
     public class DeleteAddressValidator : AbstractValidator<DeleteAddressRequest>
     {

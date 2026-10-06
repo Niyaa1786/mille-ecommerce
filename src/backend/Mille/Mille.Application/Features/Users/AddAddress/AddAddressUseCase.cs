@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Mille.Application.Features.Auth.AddAddress
+namespace Mille.Application.Features.Users.AddAddress
 {
     public class AddAddressUseCase : IUseCase<AddAddressRequest, AddAddressResponse>
     {

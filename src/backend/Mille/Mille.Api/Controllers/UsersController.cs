@@ -3,18 +3,18 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Mille.Api.Responses;
 using Mille.Application.Features.Auth.Login;
-using Mille.Application.Features.Auth.AddAddress;
 using Mille.Application.Features.Auth.ChangePassword;
-using Mille.Application.Features.Auth.DeleteAddress;
-using Mille.Application.Features.Auth.GetProfile;
 using Mille.Application.Features.Auth.Login;
 using Mille.Application.Features.Auth.Logout;
 using Mille.Application.Features.Auth.RefreshToken;
 using Mille.Application.Features.Auth.Register;
-using Mille.Application.Features.Auth.UpdateAddress;
-using Mille.Application.Features.Auth.UpdateProfile;
-using Mille.Application.Features.Auth.UploadAvatar;
 using System.Security.Claims;
+using Mille.Application.Features.Users.AddAddress;
+using Mille.Application.Features.Users.DeleteAddress;
+using Mille.Application.Features.Users.GetProfile;
+using Mille.Application.Features.Users.UpdateAddress;
+using Mille.Application.Features.Users.UpdateProfile;
+using Mille.Application.Features.Users.UploadAvatar;
 
 namespace Mille.Api.Controllers
 {
@@ -113,9 +113,10 @@ namespace Mille.Api.Controllers
         [HttpDelete("addresses/{addressId}")]
         public async Task<IActionResult> DeleteAddress(int addressId, CancellationToken ct)
         {
-            var request = new DeleteAddressRequest {
+            var request = new DeleteAddressRequest
+            {
                 UserId = GetUserId(),
-                AddressId = addressId 
+                AddressId = addressId
             };
             var result = await _deleteAddressUseCase.ExecuteAsync(request, ct);
             var res = ApiResponse<DeleteAddressResponse>.Success(result, "Address deleted.");

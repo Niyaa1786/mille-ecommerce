@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Mille.Application.Features.Auth.UpdateAddress
+namespace Mille.Application.Features.Users.UpdateAddress
 {
     public class UpdateAddressResponse
     {
