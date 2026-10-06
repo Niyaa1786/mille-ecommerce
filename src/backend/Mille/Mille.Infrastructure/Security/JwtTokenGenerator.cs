@@ -4,10 +4,6 @@ using Microsoft.IdentityModel.Tokens;
 using Mille.Application.Common.DTOs;
 using Mille.Application.Common.Interfaces;
 using Mille.Domain.Entities;
-using Mille.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 

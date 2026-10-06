@@ -3,9 +3,6 @@ using Mille.Application.Common.Exceptions;
 using Mille.Application.Common.Interfaces;
 using Mille.Domain.Enums;
 using Mille.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Mille.Application.Features.Auth.Register
 {

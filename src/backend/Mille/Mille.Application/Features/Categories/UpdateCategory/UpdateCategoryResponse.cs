@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Mille.Application.Features.Categories.UpdateCategory
+﻿namespace Mille.Application.Features.Categories.UpdateCategory
 {
     public class UpdateCategoryResponse
     {

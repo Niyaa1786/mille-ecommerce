@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Mille.Application.Features.Orders.UpdateOrderStatus
+﻿namespace Mille.Application.Features.Orders.UpdateOrderStatus
 {
     public class UpdateOrderStatusResponse
     {

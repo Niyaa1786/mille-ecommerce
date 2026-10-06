@@ -1,10 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Mille.Application.Common.Interfaces;
+﻿using Mille.Application.Common.Interfaces;
 using Mille.Domain.Interfaces;
 using Mille.Infrastructure.Persistence.Data;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Mille.Infrastructure.Persistence.Repositories
 {

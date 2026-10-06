@@ -1,10 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Mille.Domain.Entities;
 using Mille.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Mille.Infrastructure.Persistence.Data
 {

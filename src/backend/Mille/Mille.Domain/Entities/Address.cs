@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Mille.Domain.Entities
+﻿namespace Mille.Domain.Entities
 {
     public class Address
     {

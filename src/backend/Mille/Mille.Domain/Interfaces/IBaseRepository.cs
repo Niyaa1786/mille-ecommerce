@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Text;
-
-namespace Mille.Domain.Interfaces
+﻿namespace Mille.Domain.Interfaces
 {
     public interface IBaseRepository<T, TId> where T : class
     {

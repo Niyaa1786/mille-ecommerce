@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Mille.Application.Features.Carts.RemoveCartItem;
+﻿namespace Mille.Application.Features.Carts.RemoveCartItem;
 
 public class RemoveCartItemResponse
 {

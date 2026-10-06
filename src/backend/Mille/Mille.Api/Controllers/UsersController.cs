@@ -1,13 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Mille.Api.Responses;
-using Mille.Application.Features.Auth.Login;
-using Mille.Application.Features.Auth.ChangePassword;
-using Mille.Application.Features.Auth.Login;
-using Mille.Application.Features.Auth.Logout;
-using Mille.Application.Features.Auth.RefreshToken;
-using Mille.Application.Features.Auth.Register;
 using System.Security.Claims;
 using Mille.Application.Features.Users.AddAddress;
 using Mille.Application.Features.Users.DeleteAddress;

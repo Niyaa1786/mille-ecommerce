@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Mille.Application.Features.Carts.GetCart
+﻿namespace Mille.Application.Features.Carts.GetCart
 {
     public class GetCartResponse
     {

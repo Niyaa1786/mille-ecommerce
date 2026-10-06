@@ -1,8 +1,4 @@
-﻿using Mille.Domain.Enums;
-using Mille.Domain.Exceptions;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Mille.Domain.Exceptions;
 
 namespace Mille.Domain.Entities
 {

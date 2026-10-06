@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Mille.Application.Common.DTOs
+﻿namespace Mille.Application.Common.DTOs
 {
     public class TokenResult
     {

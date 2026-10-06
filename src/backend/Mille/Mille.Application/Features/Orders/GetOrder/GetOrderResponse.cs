@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Mille.Application.Features.Orders.GetOrder
+﻿namespace Mille.Application.Features.Orders.GetOrder
 {
     public class GetOrderResponse
     {

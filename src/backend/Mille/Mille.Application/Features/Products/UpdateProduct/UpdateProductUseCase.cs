@@ -1,12 +1,7 @@
 ﻿using FluentValidation;
-using Microsoft.AspNetCore.Http.Features;
-using Mille.Application.Common.DTOs;
 using Mille.Application.Common.Exceptions;
 using Mille.Application.Common.Interfaces;
 using Mille.Application.Features.Products.CreateProduct;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Mille.Application.Features.Products.UpdateProduct
 {

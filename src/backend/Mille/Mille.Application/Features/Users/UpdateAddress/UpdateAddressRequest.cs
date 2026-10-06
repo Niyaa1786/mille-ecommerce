@@ -1,8 +1,4 @@
-﻿using Mille.Application.Common.DTOs;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace Mille.Application.Features.Users.UpdateAddress
 {

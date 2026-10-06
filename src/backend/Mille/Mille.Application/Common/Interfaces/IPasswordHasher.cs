@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Mille.Application.Common.Interfaces
+﻿namespace Mille.Application.Common.Interfaces
 {
     public interface IPasswordHasher
     {

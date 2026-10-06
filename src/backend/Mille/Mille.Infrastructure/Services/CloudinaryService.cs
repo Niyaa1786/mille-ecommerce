@@ -4,10 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Mille.Application.Common.DTOs;
 using Mille.Application.Common.Interfaces;
-using System;
-using System.Collections.Generic;
 using System.Net;
-using System.Text;
 
 namespace Mille.Infrastructure.Services
 {

@@ -1,9 +1,4 @@
-﻿using Mille.Application.Common.DTOs;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Mille.Application.Features.Products.CreateProduct
+﻿namespace Mille.Application.Features.Products.CreateProduct
 {
     public class CreateProductResponse
     {

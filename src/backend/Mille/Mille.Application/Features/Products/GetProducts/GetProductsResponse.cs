@@ -1,8 +1,4 @@
-﻿using Mille.Application.Common.DTOs;
-using Mille.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Mille.Domain.Enums;
 
 namespace Mille.Application.Features.Products.GetProducts
 {

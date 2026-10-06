@@ -1,8 +1,4 @@
-﻿using Mille.Application.Common.DTOs;
-using Mille.Application.Common.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Mille.Application.Common.Interfaces;
 
 namespace Mille.Application.Features.Categories.GetCategories
 {

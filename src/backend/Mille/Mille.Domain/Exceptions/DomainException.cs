@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Mille.Domain.Exceptions
+﻿namespace Mille.Domain.Exceptions
 {
     public class DomainException : Exception
     {

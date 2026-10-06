@@ -1,13 +1,6 @@
 ﻿using FluentValidation;
-using Mille.Application.Common.DTOs;
 using Mille.Application.Common.Exceptions;
 using Mille.Application.Common.Interfaces;
-using Mille.Application.Features.Auth.Login;
-using Mille.Domain.Exceptions;
-using System;
-using System.Collections.Generic;
-using System.Security.Principal;
-using System.Text;
 
 namespace Mille.Application.Features.Auth.Login
 {

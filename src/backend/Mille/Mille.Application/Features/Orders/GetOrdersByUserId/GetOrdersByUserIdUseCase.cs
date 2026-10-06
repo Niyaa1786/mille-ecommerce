@@ -1,9 +1,4 @@
 ﻿using Mille.Application.Common.Interfaces;
-using Mille.Application.Features.Orders.GetOrders;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Xml;
 
 namespace Mille.Application.Features.Orders.GetOrdersByUserId
 {
