@@ -6,7 +6,7 @@ namespace Mille.Domain.Entities
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
-        public string? Description {  get; set; }
+        public string? Description { get; set; }
         public bool IsDeleted { get; private set; }
         public DateTime CreatedAt { get; private set; }
         public DateTime UpdatedAt { get; private set; }
@@ -16,17 +16,20 @@ namespace Mille.Domain.Entities
 
         private Category() { }
 
-        public Category(string name,  string description = null)
+        public Category(string name, string? description = null)
         {
+            ValidateRules(name);
+
             Name = name;
             Description = description;
             CreatedAt = DateTime.UtcNow;
             UpdatedAt = DateTime.UtcNow;
         }
 
-        public void UpdateInfo(string name, string description)
+        public void UpdateInfo(string name, string? description)
         {
-            if(IsDeleted) throw new DomainException("Cannot update a deleted category.");
+            EnsureNotDeleted();
+            ValidateRules(name);
 
             Name = name;
             Description = description;
@@ -45,6 +48,18 @@ namespace Mille.Domain.Entities
 
             IsDeleted = false;
             UpdatedAt = DateTime.UtcNow;
+        }
+
+        private void EnsureNotDeleted()
+        {
+            if (IsDeleted)
+                throw new DomainException("Cannot update a deleted category.");
+        }
+
+        private static void ValidateRules(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new DomainException("Category name is required.");
         }
     }
 }
