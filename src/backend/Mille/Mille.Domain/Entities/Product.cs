@@ -26,6 +26,8 @@ namespace Mille.Domain.Entities
 
         public Product(string name, int categoryId, string? description = null, ProductStatus status = ProductStatus.Active)
         {
+            ValidateRules(name, categoryId, status);
+
             Id = Guid.NewGuid();
             Name = name;
             CategoryId = categoryId;
@@ -38,6 +40,9 @@ namespace Mille.Domain.Entities
 
         public void Update(string name, int categoryId, string? description, ProductStatus status)
         {
+            EnsureNotDeleted();
+            ValidateRules(name, categoryId, status);
+
             Name = name;
             CategoryId = categoryId;
             Description = description;
@@ -47,16 +52,20 @@ namespace Mille.Domain.Entities
 
         public void SoftDelete()
         {
+            EnsureNotDeleted();
+
             IsDeleted = true;
             UpdatedAt = DateTime.UtcNow;
         }
 
         public ProductVariant AddVariant(string sku, decimal price, int stock, string? size = null, string? color = null)
         {
+            EnsureNotDeleted();
+
             if (_variants.Any(v => v.SKU == sku))
                 throw new DomainException($"Variant with SKU '{sku}' already exists.");
 
-            var newVariant = new ProductVariant(this.Id, sku, price, stock, size, color);
+            var newVariant = new ProductVariant(Id, sku, price, stock, size, color);
             _variants.Add(newVariant);
             UpdatedAt = DateTime.UtcNow;
 
@@ -65,10 +74,9 @@ namespace Mille.Domain.Entities
 
         public void RemoveVariant(Guid variantId)
         {
-            var variant = _variants.FirstOrDefault(v => v.Id == variantId);
+            EnsureNotDeleted();
 
-            if (variant is null)
-                throw new DomainException("Variant not found.");
+            var variant = GetVariantOrThrow(variantId);
 
             _variants.Remove(variant);
             UpdatedAt = DateTime.UtcNow;
@@ -76,13 +84,16 @@ namespace Mille.Domain.Entities
 
         public ProductImage AddImage(string imageUrl, string publicId, bool isThumbnail = false)
         {
+            EnsureNotDeleted();
+
             if (isThumbnail)
             {
                 foreach (var img in _images.Where(i => i.IsThumbnail))
                     img.ClearThumbnail();
             }
 
-            var image = new ProductImage(this.Id, publicId, imageUrl, isThumbnail);
+            var image = new ProductImage(Id, publicId, imageUrl, isThumbnail);
+
             _images.Add(image);
             UpdatedAt = DateTime.UtcNow;
 
@@ -91,35 +102,62 @@ namespace Mille.Domain.Entities
 
         public void RemoveImage(Guid imageId)
         {
-            var image = _images.FirstOrDefault(i => i.Id == imageId);
+            EnsureNotDeleted();
 
-            if (image is null)
-                throw new DomainException("Image not found");
+            var image = GetImageOrThrow(imageId);
 
             _images.Remove(image);
             UpdatedAt = DateTime.UtcNow;
-        }
-
-        public ProductVariant? GetVariant(Guid varientId)
-        {
-            return _variants.FirstOrDefault(v => v.Id == varientId);
         }
 
         public decimal GetCheapestPrice()
         {
             if (_variants.Count == 0)
                 return 0;
+
             return _variants.Min(v => v.Price);
         }
 
         public ProductVariant? GetCheapestVariant()
-        {
-            return _variants.MinBy(v => v.Price);
-        }
+            => _variants.MinBy(v => v.Price);
 
         public List<string> GetPublicIds()
+            => _images.Select(i => i.PublicId).ToList();
+
+        private ProductVariant GetVariantOrThrow(Guid variantId)
         {
-            return _images.Select(i => i.PublicId).ToList();
+            var variant = _variants.FirstOrDefault(v => v.Id == variantId);
+            if (variant is null)
+                throw new DomainException("Variant not found.");
+
+            return variant;
+        }
+
+        private ProductImage GetImageOrThrow(Guid imageId)
+        {
+            var image = _images.FirstOrDefault(i => i.Id == imageId);
+            if (image is null)
+                throw new DomainException("Image not found.");
+
+            return image;
+        }
+
+        private void EnsureNotDeleted()
+        {
+            if (IsDeleted)
+                throw new DomainException("Cannot modify a deleted product.");
+        }
+
+        private static void ValidateRules(string name, int categoryId, ProductStatus status)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new DomainException("Product name is required.");
+
+            if (categoryId <= 0)
+                throw new DomainException("Category id must be greater than zero.");
+
+            if (!Enum.IsDefined(status))
+                throw new DomainException("Product status is invalid.");
         }
     }
 }

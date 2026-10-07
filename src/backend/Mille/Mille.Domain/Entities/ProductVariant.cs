@@ -20,6 +20,10 @@ namespace Mille.Domain.Entities
 
         public ProductVariant(Guid productId, string sku, decimal price, int stock, string? size = null, string? color = null)
         {
+            if (productId == Guid.Empty)
+                throw new DomainException("Product id is required.");
+
+            ValidateRules(sku, price, stock);
 
             Id = Guid.NewGuid();
             ProductId = productId;
@@ -34,6 +38,8 @@ namespace Mille.Domain.Entities
 
         public void Update(decimal price, int stock, string? size, string? color)
         {
+            ValidateRules(SKU, price, stock);
+
             Price = price;
             Stock = stock;
             Size = size;
@@ -47,7 +53,7 @@ namespace Mille.Domain.Entities
                 throw new DomainException("Quantity to deduct must be greater than zero.");
 
             if (Stock < quantity)
-                throw new DomainException($"Not enough stock for variant {SKU}. Current: {Stock}, Required: {quantity}");
+                throw new DomainException($"Not enough stock for variant {SKU}. Current: {Stock}, Required: {quantity}.");
 
             Stock -= quantity;
             UpdatedAt = DateTime.UtcNow;
@@ -60,6 +66,18 @@ namespace Mille.Domain.Entities
 
             Stock += quantity;
             UpdatedAt = DateTime.UtcNow;
+        }
+
+        private static void ValidateRules(string sku, decimal price, int stock)
+        {
+            if (string.IsNullOrWhiteSpace(sku))
+                throw new DomainException("SKU is required.");
+
+            if (price < 0)
+                throw new DomainException("Price cannot be negative.");
+
+            if (stock < 0)
+                throw new DomainException("Stock cannot be negative.");
         }
     }
 }
