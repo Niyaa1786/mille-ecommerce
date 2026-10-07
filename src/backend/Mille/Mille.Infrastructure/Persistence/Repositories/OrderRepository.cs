@@ -23,9 +23,15 @@ namespace Mille.Infrastructure.Persistence.Repositories
                 .Include(o => o.StatusHistories)
                 .Include(o => o.User)
                 .Include(o => o.Payment)
+                .Include(o => o.Coupon)
                 .FirstOrDefaultAsync(o => o.Id == id, ct);
 
-        public async Task<IEnumerable<Order>> GetOrdersByUserIdAsync(Guid userId, OrderStatus? status, string? keyword, int page, int pageSize, CancellationToken ct)
+        public async Task<OrderItem?> GetOrderItemByIdAsync(int orderItemId, CancellationToken ct)
+            => await _context.OrderItems
+                .Include(i => i.Order)
+                .FirstOrDefaultAsync(i => i.Id == orderItemId, ct);
+
+        public async Task<IEnumerable<Order>> GetAllWithFiltersByUserIdAsync(Guid userId, OrderStatus? status, string? keyword, int page, int pageSize, CancellationToken ct)
         {
             var query = _context.Orders
                 .AsNoTracking()
@@ -48,7 +54,7 @@ namespace Mille.Infrastructure.Persistence.Repositories
                 .ToListAsync(ct);
         }
 
-        public async Task<IEnumerable<Order>> GetOrdersAsync(OrderStatus? status, string? keyword, int page, int pageSize, CancellationToken ct)
+        public async Task<IEnumerable<Order>> GetAllWithFiltersAsync(OrderStatus? status, string? keyword, int page, int pageSize, CancellationToken ct)
         {
             var query = _context.Orders
                 .Include(o => o.Payment)

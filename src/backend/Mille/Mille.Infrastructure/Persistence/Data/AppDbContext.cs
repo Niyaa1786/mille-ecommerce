@@ -24,6 +24,11 @@ namespace Mille.Infrastructure.Persistence.Data
         public DbSet<OrderStatusHistory> OrderStatusHistories { get; set; }
         public DbSet<Payment> Payments { get; set; }
 
+        public DbSet<Coupon> Coupons { get; set; }
+        public DbSet<CouponUsage> CouponUsages { get; set; }
+
+        public DbSet<Review> Reviews { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>(entity =>
@@ -115,7 +120,7 @@ namespace Mille.Infrastructure.Persistence.Data
                 entity.Property(e => e.UserId).IsRequired();
 
                 entity.HasOne(c => c.User)
-                      .WithOne() 
+                      .WithOne()
                       .HasForeignKey<Cart>(c => c.UserId)
                       .OnDelete(DeleteBehavior.Cascade);
 
@@ -134,7 +139,7 @@ namespace Mille.Infrastructure.Persistence.Data
                 entity.Property(e => e.Quantity).IsRequired();
 
                 entity.HasOne(i => i.ProductVariant)
-                      .WithMany() 
+                      .WithMany()
                       .HasForeignKey(i => i.ProductVariantId)
                       .OnDelete(DeleteBehavior.Cascade);
 
@@ -200,6 +205,61 @@ namespace Mille.Infrastructure.Persistence.Data
                 entity.Property(e => e.Status).HasConversion<string>();
                 entity.Property(e => e.TransactionId).HasMaxLength(255);
                 entity.Property(e => e.GatewayResponse).HasColumnType("nvarchar(max)");
+            });
+
+            modelBuilder.Entity<Coupon>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Code).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.Description).HasMaxLength(255);
+                entity.Property(e => e.DiscountType).HasConversion<string>();
+                entity.Property(e => e.DiscountValue).HasColumnType("decimal(18,2)");
+                entity.Property(e => e.MinOrderAmount).HasColumnType("decimal(18,2)");
+                entity.Property(e => e.MaxDiscountAmount).HasColumnType("decimal(18,2)");
+                entity.Property(e => e.RowVersion).IsRowVersion();
+
+                entity.HasIndex(e => e.Code).IsUnique();
+            });
+
+            modelBuilder.Entity<CouponUsage>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.HasOne(u => u.Coupon)
+                      .WithMany()
+                      .HasForeignKey(u => u.CouponId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(u => u.User)
+                      .WithMany()
+                      .HasForeignKey(u => u.UserId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(u => u.Order)
+                      .WithMany()
+                      .HasForeignKey(u => u.OrderId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasIndex(e => new { e.CouponId, e.UserId });
+            });
+
+            modelBuilder.Entity<Review>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Rating).IsRequired();
+                entity.Property(e => e.Comment).HasMaxLength(1000);
+
+                entity.HasOne(r => r.User)
+                      .WithMany()
+                      .HasForeignKey(r => r.UserId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(r => r.OrderItem)
+                      .WithOne()
+                      .HasForeignKey<Review>(r => r.OrderItemId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasIndex(e => e.OrderItemId).IsUnique();
             });
 
             SeedData(modelBuilder);
