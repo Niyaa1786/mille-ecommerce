@@ -17,6 +17,8 @@ namespace Mille.Domain.Entities
 
         public CartItem(Guid cartId, Guid variantId, int quantity)
         {
+            ValidateRules(cartId, variantId, quantity);
+
             CartId = cartId;
             ProductVariantId = variantId;
             Quantity = quantity;
@@ -25,8 +27,9 @@ namespace Mille.Domain.Entities
 
         public void SetQuantity(int newQuantity)
         {
-            if(newQuantity <= 0)
+            if (newQuantity <= 0)
                 throw new DomainException("Amount must be positive");
+
             Quantity = newQuantity;
         }
 
@@ -34,6 +37,7 @@ namespace Mille.Domain.Entities
         {
             if (amount <= 0)
                 throw new DomainException("Amount must be positive");
+
             Quantity += amount;
         }
 
@@ -41,12 +45,24 @@ namespace Mille.Domain.Entities
         {
             if (amount <= 0)
                 throw new DomainException("Amount must be positive");
-            if(Quantity - amount <= 0)
+            if (Quantity - amount <= 0)
                 throw new DomainException("Quantity cannot be reduced below 1.");
 
             Quantity -= amount;
         }
 
         public decimal SubTotal => ProductVariant.Price * Quantity;
+
+        private static void ValidateRules(Guid cartId, Guid productVariantId, int quantity)
+        {
+            if (cartId == Guid.Empty)
+                throw new DomainException("Cart id is required.");
+
+            if (productVariantId == Guid.Empty)
+                throw new DomainException("Product variant id is required.");
+
+            if (quantity <= 0)
+                throw new DomainException("Quantity must be greater than zero.");
+        }
     }
 }

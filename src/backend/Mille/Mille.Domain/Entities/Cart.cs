@@ -18,6 +18,8 @@ namespace Mille.Domain.Entities
 
         public Cart(Guid userId)
         {
+            ValidateRules(userId);
+
             Id = Guid.NewGuid();
             UserId = userId;
             CreatedAt = DateTime.UtcNow;
@@ -26,29 +28,27 @@ namespace Mille.Domain.Entities
 
         public CartItem AddItem(ProductVariant variant, int quantity)
         {
+            if (variant is null)
+                throw new DomainException("Product variant is required.");
+
             var existingItem = _items.FirstOrDefault(ci => ci.ProductVariantId == variant.Id);
-            if(existingItem == null)
+            if (existingItem == null)
             {
-                var newItem = new CartItem(this.Id, variant.Id, quantity);
+                var newItem = new CartItem(Id, variant.Id, quantity);
                 _items.Add(newItem);
 
                 UpdatedAt = DateTime.UtcNow;
                 return newItem;
             }
-            else
-            {
-                existingItem.IncreaseQuantity(quantity);
 
-                UpdatedAt = DateTime.UtcNow;
-                return existingItem;
-            }
+            existingItem.IncreaseQuantity(quantity);
+            UpdatedAt = DateTime.UtcNow;
+            return existingItem;
         }
 
         public void RemoveItem(int cartItemId)
         {
-            var item = _items.FirstOrDefault(ci => ci.Id == cartItemId);
-            if (item == null)
-                throw new DomainException("Cart item not found");
+            var item = GetItemOrThrow(cartItemId);
 
             _items.Remove(item);
             UpdatedAt = DateTime.UtcNow;
@@ -56,14 +56,22 @@ namespace Mille.Domain.Entities
 
         public void SetItemQuantity(int cartItemId, int newQuantity)
         {
-            var item = _items.FirstOrDefault(ci => ci.Id ==  cartItemId);
-            if(item == null)
-                throw new DomainException("Cart item not found");
+            var item = GetItemOrThrow(cartItemId);
 
             item.SetQuantity(newQuantity);
             UpdatedAt = DateTime.UtcNow;
         }
 
         public decimal TotalPrice => _items.Sum(ci => ci.SubTotal);
+
+        private CartItem GetItemOrThrow(int cartItemId)
+            => _items.FirstOrDefault(ci => ci.Id == cartItemId)
+               ?? throw new DomainException("Cart item not found.");
+
+        private static void ValidateRules(Guid userId)
+        {
+            if (userId == Guid.Empty)
+                throw new DomainException("User id is required.");
+        }
     }
 }
