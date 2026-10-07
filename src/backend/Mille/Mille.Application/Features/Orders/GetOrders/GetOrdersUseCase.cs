@@ -6,7 +6,7 @@ namespace Mille.Application.Features.Orders.GetOrders
     {
         public async Task<GetOrdersResponse> ExecuteAsync(GetOrdersRequest request, CancellationToken ct = default)
         {
-            var orders = await unitOfWork.Orders.GetOrdersAsync(
+            var orders = await unitOfWork.Orders.GetAllWithFiltersAsync(
                 request.Status,
                 request.Keyword,
                 request.Page,

@@ -28,7 +28,7 @@ namespace Mille.Application.Features.Products.GetProducts
                 request.IncludeDeleted,
                 ct);
 
-            var items = product.Select(p => new ProductListDto
+            var items = product.Select(p => new ProductSummaryDto
             {
                 Id = p.Id,
                 Name = p.Name,
@@ -38,11 +38,11 @@ namespace Mille.Application.Features.Products.GetProducts
                 MinPrice = p.GetCheapestPrice(),
                 ThumbnailUrl = p.Images.FirstOrDefault(i => i.IsThumbnail)?.ImageUrl ?? p.Images.FirstOrDefault()?.ImageUrl,
                 CreatedAt = p.CreatedAt
-            });
+            }).ToList();
 
             return new GetProductsResponse
             {
-                Items = items.ToList(),
+                Items = items,
                 TotalCount = totalCount,
                 Page = request.Page,
                 PageSize = request.PageSize

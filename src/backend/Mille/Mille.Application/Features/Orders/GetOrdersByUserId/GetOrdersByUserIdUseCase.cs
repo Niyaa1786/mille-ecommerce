@@ -6,7 +6,7 @@ namespace Mille.Application.Features.Orders.GetOrdersByUserId
     {
         public async Task<GetOrdersByUserIdResponse> ExecuteAsync(GetOrdersByUserIdRequest request, CancellationToken ct = default)
         {
-            var orders = await unitOfWork.Orders.GetOrdersByUserIdAsync(
+            var orders = await unitOfWork.Orders.GetAllWithFiltersByUserIdAsync(
                 request.UserId,
                 request.Status,
                 request.Keyword,
