@@ -26,6 +26,8 @@ namespace Mille.Domain.Entities
 
         public User(string fullName, string email, string passwordHash, UserRole role = UserRole.Customer)
         {
+            ValidateRules(fullName, email, passwordHash, role);
+
             Id = Guid.NewGuid();
             FullName = fullName;
             Email = email;
@@ -38,6 +40,9 @@ namespace Mille.Domain.Entities
 
         public void UpdateProfile(string fullName, string? phone)
         {
+            if (string.IsNullOrWhiteSpace(fullName))
+                throw new DomainException("Full name is required.");
+
             FullName = fullName;
             Phone = phone;
             UpdatedAt = DateTime.UtcNow;
@@ -45,6 +50,9 @@ namespace Mille.Domain.Entities
 
         public void UpdateAvatar(string avatarUrl)
         {
+            if (string.IsNullOrWhiteSpace(avatarUrl))
+                throw new DomainException("Avatar url is required.");
+
             AvatarUrl = avatarUrl;
             UpdatedAt = DateTime.UtcNow;
         }
@@ -52,12 +60,21 @@ namespace Mille.Domain.Entities
 
         public void ChangePassword(string passwordHash)
         {
+            if (string.IsNullOrWhiteSpace(passwordHash))
+                throw new DomainException("Password hash is required.");
+
             PasswordHash = passwordHash;
             UpdatedAt = DateTime.UtcNow;
         }
 
         public void SetRefreshToken(string token, DateTime expiry)
         {
+            if (string.IsNullOrWhiteSpace(token))
+                throw new DomainException("Refresh token is required.");
+
+            if (expiry <= DateTime.UtcNow)
+                throw new DomainException("Refresh token expiry must be in the future.");
+
             RefreshToken = token;
             RefreshTokenExpiryTime = expiry;
             UpdatedAt = DateTime.UtcNow;
@@ -86,7 +103,7 @@ namespace Mille.Domain.Entities
         public Address AddAddress(string receiverName, string receiverPhone, string addressLine, bool isDefault = false)
         {
             if (isDefault)
-                foreach(var addr in _addresses)
+                foreach (var addr in _addresses)
                     addr.ClearDefault();
 
             var address = new Address(receiverName, receiverPhone, addressLine, isDefault);
@@ -96,8 +113,9 @@ namespace Mille.Domain.Entities
 
         public void UpdateAddress(int addressId, string receiverName, string receiverPhone, string addressLine, bool isDefault)
         {
-            var address = _addresses.FirstOrDefault(a => a.Id == addressId)
-                ?? throw new DomainException("Address not found");
+            var address = _addresses.FirstOrDefault(a => a.Id == addressId);
+            if (address == null)
+                throw new DomainException("Address not found");
 
             if (isDefault)
                 foreach (var addr in _addresses.Where(a => a.Id != addressId))
@@ -117,6 +135,21 @@ namespace Mille.Domain.Entities
 
         public Address GetDefaultAddress()
             => _addresses.FirstOrDefault(a => a.IsDefault);
+
+        private static void ValidateRules(string fullName, string email, string passwordHash, UserRole role)
+        {
+            if (string.IsNullOrWhiteSpace(fullName))
+                throw new DomainException("Full name is required.");
+
+            if (string.IsNullOrWhiteSpace(email))
+                throw new DomainException("Email is required.");
+
+            if (string.IsNullOrWhiteSpace(passwordHash))
+                throw new DomainException("Password hash is required.");
+
+            if (!Enum.IsDefined(role))
+                throw new DomainException("User role is invalid.");
+        }
     }
 }
 
