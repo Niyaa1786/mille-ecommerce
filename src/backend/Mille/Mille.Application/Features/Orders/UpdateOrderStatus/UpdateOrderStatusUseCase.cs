@@ -15,9 +15,6 @@ namespace Mille.Application.Features.Orders.UpdateOrderStatus
             if (order == null)
                 throw new NotFoundException("Order not found.");
 
-            if (order.Status == OrderStatus.Completed || order.Status == OrderStatus.Cancelled)
-                throw new AppValidationException(nameof(request.NewStatus), "Cannot change status of completed or cancelled order.");
-
             switch (request.NewStatus)
             {
                 case OrderStatus.Confirmed:
@@ -39,6 +36,16 @@ namespace Mille.Application.Features.Orders.UpdateOrderStatus
                     var variant = await unitOfWork.ProductVariants.GetByIdAsync(item.ProductVariantId, ct);
                     if (variant != null)
                         variant.Restock(item.Quantity);
+                }
+
+                if (order.CouponId.HasValue)
+                {
+                    var coupon = await unitOfWork.Coupons.GetByIdAsync(order.CouponId.Value, ct);
+                    coupon?.Release();
+
+                    var usage = await unitOfWork.Coupons.GetUsageByOrderIdAsync(order.Id, ct);
+                    if (usage != null)
+                        unitOfWork.Coupons.RemoveUsage(usage);
                 }
             }
 
