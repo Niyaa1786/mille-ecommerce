@@ -17,10 +17,20 @@ namespace Mille.Application.Features.Orders.CancelOrder
 
             order.Cancel("Cancelled by user");
 
-            foreach(var item in order.Items)
+            foreach (var item in order.Items)
             {
                 var variant = await unitOfWork.ProductVariants.GetByIdAsync(item.ProductVariantId, ct);
                 variant.Restock(item.Quantity);
+            }
+
+            if (order.CouponId.HasValue)
+            {
+                var coupon = await unitOfWork.Coupons.GetByIdAsync(order.CouponId.Value, ct);
+                coupon?.Release();
+
+                var usage = await unitOfWork.Coupons.GetUsageByOrderIdAsync(order.Id, ct);
+                if (usage != null)
+                    unitOfWork.Coupons.RemoveUsage(usage);
             }
 
             await unitOfWork.SaveChangesAsync(ct);
