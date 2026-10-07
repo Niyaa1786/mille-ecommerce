@@ -17,6 +17,9 @@ namespace Mille.Application.Features.Orders.CreateOrder
             RuleFor(x => x.ShippingAddress)
                 .NotEmpty().WithMessage("Shipping address is required.")
                 .MaximumLength(500);
+
+            RuleFor(x => x.CouponCode)
+                .MaximumLength(50).WithMessage("Coupon code must not exceed 50 characters.");
         }
     }
 }

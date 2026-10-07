@@ -5,13 +5,6 @@ using Mille.Domain.Entities;
 
 namespace Mille.Application.Features.Orders.CreateOrder
 {
-    // =========================================================================================
-    //                      🪦 RIP 'private readonly' (2025 - 2026)
-    // 
-    // 🔮 Thầy bói bảo: Chuyển sang cú pháp mới này bug giảm 50%, ngón tay bớt đau khớp!
-    // Bàn phím đã gãy 3 phím Tab vì generate ctor rồi, nên từ UseCase này trở đi 
-    // xin phép mở bát Primary Constructor cho  nó "chilllll!!" hands🧋
-    // =========================================================================================
     public class CreateOrderUseCase(IUnitOfWork unitOfWork, IValidator<CreateOrderRequest> validator) : IUseCase<CreateOrderRequest, CreateOrderResponse>
     {
         public async Task<CreateOrderResponse> ExecuteAsync(CreateOrderRequest request, CancellationToken ct = default)
@@ -23,8 +16,8 @@ namespace Mille.Application.Features.Orders.CreateOrder
                 throw new NotFoundException("User not found.");
 
             var cart = await unitOfWork.Carts.GetByUserIdWithDetailsAsync(request.UserId, ct);
-            if (cart == null || !cart.Items.Any())
-                throw new AppValidationException("Cart", "Cart is empty.");
+            if (cart == null || cart.Items.Count == 0)
+                throw new AppValidationException(nameof(Cart), "Cart is empty.");
 
             var totalAmount = cart.TotalPrice;
 
@@ -43,10 +36,24 @@ namespace Mille.Application.Features.Orders.CreateOrder
                 order.AddItem(variant.Id, variant.Product?.Name!, variant.SKU, cartItem.Quantity, variant.Price);
             }
 
-            var payment = new Payment(order.Id, request.PaymentMethod, totalAmount);
+            Coupon? coupon = null;
+            if (!string.IsNullOrWhiteSpace(request.CouponCode))
+            {
+                coupon = await unitOfWork.Coupons.GetByCodeAsync(request.CouponCode, ct);
+                if (coupon == null)
+                    throw new NotFoundException("Coupon code is invalid.");
+
+                var discountAmount = coupon.CalculateDiscount(totalAmount);
+                order.ApplyCoupon(coupon.Id, discountAmount);
+                coupon.Use();
+            }
+
+            var payment = new Payment(order.Id, request.PaymentMethod, order.FinalAmount);
             order.AttachPayment(payment);
 
             unitOfWork.Orders.Add(order);
+            if (coupon != null)
+                unitOfWork.Coupons.AddUsage(new CouponUsage(coupon.Id, request.UserId, order.Id));
             unitOfWork.Carts.Remove(cart);
 
             await unitOfWork.SaveChangesAsync(ct);
@@ -55,10 +62,11 @@ namespace Mille.Application.Features.Orders.CreateOrder
             {
                 OrderId = order.Id,
                 TotalAmount = totalAmount,
+                DiscountAmount = order.DiscountAmount,
+                FinalAmount = order.FinalAmount,
                 PaymentMethod = payment.Method,
                 Message = "Order created successfully."
             };
-
         }
     }
 }
