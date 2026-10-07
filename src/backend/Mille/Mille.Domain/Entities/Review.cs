@@ -21,14 +21,25 @@ namespace Mille.Domain.Entities
 
         public Review(Guid userId, int orderItemId, int rating, string? comment)
         {
-            if (rating < MinRating || rating > MaxRating)
-                throw new DomainException($"Rating must be between {MinRating} and {MaxRating}.");
+            ValidateRules(userId, orderItemId, rating);
 
             UserId = userId;
             OrderItemId = orderItemId;
             Rating = rating;
             Comment = string.IsNullOrWhiteSpace(comment) ? null : comment.Trim();
             CreatedAt = DateTime.UtcNow;
+        }
+
+        private static void ValidateRules(Guid userId, int orderItemId, int rating)
+        {
+            if (userId == Guid.Empty)
+                throw new DomainException("User id is required.");
+
+            if (orderItemId <= 0)
+                throw new DomainException("Order item id must be greater than zero.");
+
+            if (rating < MinRating || rating > MaxRating)
+                throw new DomainException($"Rating must be between {MinRating} and {MaxRating}.");
         }
     }
 }
