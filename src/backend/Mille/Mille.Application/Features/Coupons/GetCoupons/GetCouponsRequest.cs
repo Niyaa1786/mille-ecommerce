@@ -1,4 +1,4 @@
-namespace ECommerce.Application.Features.Coupons.GetCoupons
+namespace Mille.Application.Features.Coupons.GetCoupons
 {
     public class GetCouponsRequest
     {
