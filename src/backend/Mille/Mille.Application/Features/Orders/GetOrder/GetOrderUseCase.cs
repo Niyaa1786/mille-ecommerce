@@ -8,7 +8,7 @@ namespace Mille.Application.Features.Orders.GetOrder
         public async Task<GetOrderResponse> ExecuteAsync(GetOrderRequest request, CancellationToken ct = default)
         {
             var order = await unitOfWork.Orders.GetByIdWithDetailsAsync(request.OrderId, ct);
-            if(order == null)
+            if (order == null)
                 throw new NotFoundException("Order not found.");
 
             return new GetOrderResponse
@@ -19,6 +19,7 @@ namespace Mille.Application.Features.Orders.GetOrder
                 ShippingAddress = order.ShippingAddress,
                 TotalAmount = order.TotalAmount,
                 DiscountAmount = order.DiscountAmount,
+                CouponCode = order.Coupon?.Code,
                 Status = order.Status.ToString(),
                 CreatedAt = order.CreatedAt,
                 UpdatedAt = order.UpdatedAt,

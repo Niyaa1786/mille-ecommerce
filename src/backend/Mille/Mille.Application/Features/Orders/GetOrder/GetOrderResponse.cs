@@ -8,6 +8,7 @@
         public string ShippingAddress { get; set; } = string.Empty;
         public decimal TotalAmount { get; set; }
         public decimal DiscountAmount { get; set; }
+        public string? CouponCode { get; set; }
         public string Status { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
