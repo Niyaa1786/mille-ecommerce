@@ -12,12 +12,16 @@ namespace Mille.Domain.Entities
         public string ShippingAddress { get; private set; }
         public decimal TotalAmount { get; private set; }
         public decimal DiscountAmount { get; private set; }
+        public int? CouponId { get; private set; }
         public OrderStatus Status { get; private set; }
         public DateTime CreatedAt { get; private set; }
         public DateTime UpdatedAt { get; private set; }
 
         public User User { get; private set; }
         public Payment Payment { get; private set; }
+        public Coupon? Coupon { get; private set; }
+
+        public decimal FinalAmount => TotalAmount - DiscountAmount;
 
         private readonly List<OrderItem> _items = new();
         public IReadOnlyCollection<OrderItem> Items => _items.AsReadOnly();
@@ -40,18 +44,31 @@ namespace Mille.Domain.Entities
             CreatedAt = DateTime.UtcNow;
             UpdatedAt = DateTime.UtcNow;
 
-            AddStatusHistory(OrderStatus.Pending, "Đơn hàng đã được khởi tạo.");
+            AddStatusHistory(OrderStatus.Pending, "The order has been placed.");
         }
 
         public OrderItem AddItem(Guid productVariantId, string productName, string sku, int quantity, decimal unitPrice)
         {
             if (Status != OrderStatus.Pending)
-                throw new DomainException("Chỉ có thể thêm sản phẩm khi đơn hàng ở trạng thái Chờ xử lý.");
+                throw new DomainException("Only items can be added to orders in the Pending state.");
 
             var item = new OrderItem(Id, productVariantId, productName, sku, quantity, unitPrice);
             _items.Add(item);
             UpdatedAt = DateTime.UtcNow;
             return item;
+        }
+
+        public void ApplyCoupon(int couponId, decimal discountAmount)
+        {
+            if (Status != OrderStatus.Pending)
+                throw new DomainException("Coupon can only be applied to orders in the Pending state.");
+
+            if (discountAmount < 0 || discountAmount > TotalAmount)
+                throw new DomainException("Discount amount is invalid.");
+
+            CouponId = couponId;
+            DiscountAmount = discountAmount;
+            UpdatedAt = DateTime.UtcNow;
         }
 
         public void AttachPayment(Payment payment)
@@ -62,31 +79,31 @@ namespace Mille.Domain.Entities
 
         public void Confirm(string? note = null)
         {
-            ChangeStatus(OrderStatus.Confirmed, note ?? "Đơn hàng đã được xác nhận.");
+            ChangeStatus(OrderStatus.Confirmed, note ?? "The order has been confirmed.");
         }
 
         public void Ship(string? note = null)
         {
             if (Status != OrderStatus.Confirmed)
-                throw new DomainException("Chỉ có thể giao đơn hàng đã được xác nhận.");
+                throw new DomainException("Only confirmed orders can be shipped.");
 
-            ChangeStatus(OrderStatus.Shipping, note ?? "Đơn hàng đang được giao.");
+            ChangeStatus(OrderStatus.Shipping, note ?? "The order is being shipped.");
         }
 
         public void Complete(string? note = null)
         {
-            if (Status != OrderStatus.Shipping  )
-                throw new DomainException("Chỉ có thể hoàn tất đơn hàng đang giao.");
+            if (Status != OrderStatus.Shipping)
+                throw new DomainException("Only shipping orders can be completed.");
 
-            ChangeStatus(OrderStatus.Completed, note ?? "Giao hàng thành công. Đơn hàng hoàn tất.");
+            ChangeStatus(OrderStatus.Completed, note ?? "The order has been completed.");
         }
 
         public void Cancel(string reason)
         {
             if (Status == OrderStatus.Completed || Status == OrderStatus.Cancelled)
-                throw new DomainException("Không thể hủy đơn hàng đã hoàn tất hoặc đã hủy trước đó.");
+                throw new DomainException("Only pending or confirmed orders can be cancelled.");
 
-            ChangeStatus(OrderStatus.Cancelled, $"Đơn hàng bị hủy. Lý do: {reason}");
+            ChangeStatus(OrderStatus.Cancelled, $"The order has been cancelled. Reason: {reason}");
         }
 
         private void AddStatusHistory(OrderStatus status, string? note = null)
