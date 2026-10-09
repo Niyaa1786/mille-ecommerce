@@ -2,6 +2,7 @@
 using Mille.Application.Common.Exceptions;
 using Mille.Application.Common.Interfaces;
 using Mille.Domain.Entities;
+using Mille.Domain.Enums;
 
 namespace Mille.Application.Features.Carts.AddToCart
 {
@@ -24,6 +25,13 @@ namespace Mille.Application.Features.Carts.AddToCart
             if (variant == null)
                 throw new NotFoundException(nameof(ProductVariant), request.ProductVariantId);
 
+            var product = variant.Product;
+            if (product == null || product.IsDeleted)
+                throw new NotFoundException("Product is no longer available.");
+
+            if (product.Status != ProductStatus.Active)
+                throw new AppValidationException(nameof(request.ProductVariantId), $"Product '{product.Name}' is currently not available for purchase.");
+
             if (variant.Stock < request.Quantity)
                 throw new AppValidationException(nameof(request.Quantity), $"Not enough stock. Available: {variant.Stock}");
 
@@ -38,7 +46,7 @@ namespace Mille.Application.Features.Carts.AddToCart
 
             await _unitOfWork.SaveChangesAsync(ct);
 
-            var productName = variant.Product.Name;
+            var productName = product.Name;
             var totalCartItems = await _unitOfWork.Carts.CountCartItemsByUserIdAsync(request.UserId, ct);
 
             return new AddToCartResponse
