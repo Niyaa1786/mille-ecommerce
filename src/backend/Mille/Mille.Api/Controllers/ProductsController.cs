@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Mille.Api.Responses;
-using Mille.Application.Features.Products._Deprecated_UpdateProduct;
 using Mille.Application.Features.Products.CreateProduct;
 using Mille.Application.Features.Products.DeleteProduct;
 using Mille.Application.Features.Products.GetProduct;
 using Mille.Application.Features.Products.GetProducts;
+using Mille.Application.Features.Products.UpdateProduct;
 using Mille.Domain.Enums;
+using Mille.Application.Features.Products.UpdateProductImages;
 
 namespace Mille.Api.Controllers
 {
@@ -18,6 +19,7 @@ namespace Mille.Api.Controllers
         #region
         private readonly CreateProductUseCase _createUseCase;
         private readonly UpdateProductUseCase _updateUseCase;
+        private readonly UpdateProductImagesUseCase _updateProductImagesUseCase;
         private readonly DeleteProductUseCase _deleteUseCase;
         private readonly GetProductUseCase _getProductUseCase;
         private readonly GetProductsUseCase _getProductsUseCase;
@@ -25,12 +27,14 @@ namespace Mille.Api.Controllers
         public ProductsController(
             CreateProductUseCase createUseCase,
             UpdateProductUseCase updateUseCase,
+            UpdateProductImagesUseCase updateProductImagesUseCase,
             DeleteProductUseCase deleteUseCase,
             GetProductUseCase getProductUseCase,
             GetProductsUseCase getProductsUseCase)
         {
             _createUseCase = createUseCase;
             _updateUseCase = updateUseCase;
+            _updateProductImagesUseCase = updateProductImagesUseCase;
             _deleteUseCase = deleteUseCase;
             _getProductUseCase = getProductUseCase;
             _getProductsUseCase = getProductsUseCase;
@@ -62,14 +66,25 @@ namespace Mille.Api.Controllers
         }
 
         [HttpPut("{id:guid}")]
-        public async Task<IActionResult> UpdateProduct(Guid id, [FromForm] UpdateProductRequest request, CancellationToken ct)
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        public async Task<IActionResult> UpdateProduct(Guid id, UpdateProductRequest request, CancellationToken ct)
         {
             request.Id = id;
             var result = await _updateUseCase.ExecuteAsync(request, ct);
             return Ok(ApiResponse<UpdateProductResponse>.Success(result, "Product updated."));
         }
 
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        [HttpPut("{id:guid}/images")]
+        public async Task<IActionResult> UpdateProductImages(Guid id, [FromForm] UpdateProductImagesRequest request, CancellationToken ct)
+        {
+            request.ProductId = id;
+            var result = await _updateProductImagesUseCase.ExecuteAsync(request, ct);
+            return Ok(ApiResponse<UpdateProductImagesResponse>.Success(result, "Product images updated."));
+        }
+
         [HttpDelete("{id:guid}")]
+        [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<IActionResult> DeleteProduct(Guid id, CancellationToken ct)
         {
             var request = new DeleteProductRequest { Id = id };
