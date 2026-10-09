@@ -12,12 +12,16 @@ namespace Mille.Domain.Entities
         public string ShippingAddress { get; private set; } = string.Empty;
         public decimal TotalAmount { get; private set; }
         public decimal DiscountAmount { get; private set; }
+        public int? CouponId { get; private set; }
         public OrderStatus Status { get; private set; }
         public DateTime CreatedAt { get; private set; }
         public DateTime UpdatedAt { get; private set; }
 
         public User User { get; private set; }
         public Payment Payment { get; private set; }
+
+        public Coupon? Coupon { get; private set; }
+        public decimal FinalAmount => TotalAmount - DiscountAmount;
 
         private readonly List<OrderItem> _items = new();
         public IReadOnlyCollection<OrderItem> Items => _items.AsReadOnly();
@@ -53,6 +57,22 @@ namespace Mille.Domain.Entities
             _items.Add(item);
             UpdatedAt = DateTime.UtcNow;
             return item;
+        }
+
+        public void ApplyCoupon(int couponId, decimal discountAmount)
+        {
+            EnsureStatus(OrderStatus.Pending, "Coupon can only be applied to orders in the Pending state.");
+
+            if (discountAmount < 0)
+                throw new DomainException("Discount amount cannot be negative.");
+
+            if (discountAmount > TotalAmount)
+                throw new DomainException("Discount amount cannot exceed the total amount.");
+
+
+            CouponId = couponId;
+            DiscountAmount = discountAmount;
+            UpdatedAt = DateTime.UtcNow;
         }
 
         public void AttachPayment(Payment payment)
