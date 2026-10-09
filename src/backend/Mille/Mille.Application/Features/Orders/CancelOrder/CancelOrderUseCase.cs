@@ -20,7 +20,7 @@ namespace Mille.Application.Features.Orders.CancelOrder
             foreach (var item in order.Items)
             {
                 var variant = await unitOfWork.ProductVariants.GetByIdAsync(item.ProductVariantId, ct);
-                variant.Restock(item.Quantity);
+                variant?.Restock(item.Quantity);
             }
 
             if (order.CouponId.HasValue)
@@ -31,6 +31,15 @@ namespace Mille.Application.Features.Orders.CancelOrder
                 var usage = await unitOfWork.Coupons.GetUsageByOrderIdAsync(order.Id, ct);
                 if (usage != null)
                     unitOfWork.Coupons.RemoveUsage(usage);
+            }
+
+            var payment = order.Payment;
+            if (payment != null)
+            {
+                if (payment.Status == PaymentStatus.Pending)
+                    payment.Fail("Order cancelled.");
+                else if (payment.Status == PaymentStatus.Success)
+                    payment.Refund();
             }
 
             await unitOfWork.SaveChangesAsync(ct);
