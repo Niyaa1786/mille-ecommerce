@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace Mille.Application.Features.Products.UpdateProduct
+namespace Mille.Application.Features.Products._Deprecated_UpdateProduct
 {
     public class UpdateProductValidator : AbstractValidator<UpdateProductRequest>
     {

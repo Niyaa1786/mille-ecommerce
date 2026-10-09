@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Mille.Api.Responses;
+using Mille.Application.Features.Products._Deprecated_UpdateProduct;
 using Mille.Application.Features.Products.CreateProduct;
 using Mille.Application.Features.Products.DeleteProduct;
 using Mille.Application.Features.Products.GetProduct;
 using Mille.Application.Features.Products.GetProducts;
-using Mille.Application.Features.Products.UpdateProduct;
 using Mille.Domain.Enums;
 
 namespace Mille.Api.Controllers

@@ -3,7 +3,7 @@ using Mille.Application.Common.Exceptions;
 using Mille.Application.Common.Interfaces;
 using Mille.Application.Features.Products.CreateProduct;
 
-namespace Mille.Application.Features.Products.UpdateProduct
+namespace Mille.Application.Features.Products._Deprecated_UpdateProduct
 {
     public class UpdateProductUseCase : IUseCase<UpdateProductRequest, UpdateProductResponse>
     {
