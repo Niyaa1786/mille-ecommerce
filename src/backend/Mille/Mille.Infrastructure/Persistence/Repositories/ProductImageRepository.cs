@@ -13,8 +13,8 @@ namespace Mille.Infrastructure.Persistence.Repositories
         public async Task<IEnumerable<ProductImage>> GetAllAsync(CancellationToken ct)
             => await _context.ProductImages.AsNoTracking().ToListAsync(ct);
 
-        public async Task<ProductImage?> GetByIdAsync(int id, CancellationToken ct)
-            => await _context.ProductImages.FindAsync(id, ct);
+        public async Task<ProductImage?> GetByIdAsync(Guid id, CancellationToken ct)
+            => await _context.ProductImages.FirstOrDefaultAsync(i => i.Id == id, ct);
 
         public async Task<IEnumerable<ProductImage>> GetByProductIdAsync(Guid productId, CancellationToken ct)
             => await _context.ProductImages
@@ -29,6 +29,5 @@ namespace Mille.Infrastructure.Persistence.Repositories
         public void Add(ProductImage entity) => _context.ProductImages.Add(entity);
         public void Update(ProductImage entity) => _context.ProductImages.Update(entity);
         public void Remove(ProductImage entity) => _context.ProductImages.Remove(entity);
-
     }
 }
