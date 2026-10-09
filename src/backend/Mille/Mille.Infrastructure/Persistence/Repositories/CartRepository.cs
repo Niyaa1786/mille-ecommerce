@@ -22,7 +22,8 @@ namespace Mille.Infrastructure.Persistence.Repositories
                 .ThenInclude(i => i.ProductVariant)
                     .ThenInclude(v => v.Product)
                         .ThenInclude(p => p.Images)
-            .FirstOrDefaultAsync(ct);
+            .FirstOrDefaultAsync(c => c.Id == id, ct);
+
         public async Task<Cart?> GetByUserIdAsync(Guid userId, CancellationToken ct = default)
             => await _context.Carts.FirstOrDefaultAsync(c => c.UserId == userId, ct);
 
@@ -32,7 +33,7 @@ namespace Mille.Infrastructure.Persistence.Repositories
                 .ThenInclude(i => i.ProductVariant)
                     .ThenInclude(v => v.Product)
                         .ThenInclude(p => p.Images)
-            .FirstOrDefaultAsync(ct);
+            .FirstOrDefaultAsync(c => c.UserId == userId, ct);
 
         public async Task<int> CountCartItemsByUserIdAsync(Guid userId, CancellationToken ct = default)
             => await _context.CartItems.CountAsync(ci => ci.Cart.UserId == userId, ct);
