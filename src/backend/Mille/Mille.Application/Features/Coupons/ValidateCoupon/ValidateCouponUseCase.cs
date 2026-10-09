@@ -19,6 +19,10 @@ namespace Mille.Application.Features.Coupons.ValidateCoupon
             if (coupon == null)
                 throw new NotFoundException("Coupon code is invalid.");
 
+            var isUsed = await unitOfWork.Coupons.IsUsedByUserAsync(coupon.Id, request.UserId, ct);
+            if (isUsed)
+                throw new AppValidationException(nameof(request.Code), "You have already used this coupon.");
+
             var orderAmount = cart.TotalPrice;
             var discountAmount = coupon.CalculateDiscount(orderAmount);
 
