@@ -2,6 +2,7 @@
 using Mille.Application.Common.Exceptions;
 using Mille.Application.Common.Interfaces;
 using Mille.Domain.Entities;
+using Mille.Domain.Enums;
 
 namespace Mille.Application.Features.Orders.CreateOrder
 {
@@ -29,11 +30,18 @@ namespace Mille.Application.Features.Orders.CreateOrder
                 if (variant == null)
                     throw new NotFoundException("Product variant not found.");
 
+                var product = variant.Product;
+                if (product == null || product.IsDeleted)
+                    throw new NotFoundException("Product is no longer available.");
+
+                if (product.Status != ProductStatus.Active)
+                    throw new AppValidationException(nameof(cartItem.ProductVariantId), $"Product '{product.Name}' is currently not available for purchase.");
+
                 if (variant.Stock < cartItem.Quantity)
                     throw new AppValidationException(nameof(cartItem.Quantity), $"Not enough stock for variant {variant.SKU}. Available: {variant.Stock}");
 
                 variant.DeductStock(cartItem.Quantity);
-                order.AddItem(variant.Id, variant.Product?.Name!, variant.SKU, cartItem.Quantity, variant.Price);
+                order.AddItem(variant.Id, product.Name, variant.SKU, cartItem.Quantity, variant.Price);
             }
 
             Coupon? coupon = null;
@@ -42,6 +50,10 @@ namespace Mille.Application.Features.Orders.CreateOrder
                 coupon = await unitOfWork.Coupons.GetByCodeAsync(request.CouponCode, ct);
                 if (coupon == null)
                     throw new NotFoundException("Coupon code is invalid.");
+
+                var isUsed = await unitOfWork.Coupons.IsUsedByUserAsync(coupon.Id, request.UserId, ct);
+                if (isUsed)
+                    throw new AppValidationException(nameof(request.CouponCode), "You have already used this coupon.");
 
                 var discountAmount = coupon.CalculateDiscount(totalAmount);
                 order.ApplyCoupon(coupon.Id, discountAmount);

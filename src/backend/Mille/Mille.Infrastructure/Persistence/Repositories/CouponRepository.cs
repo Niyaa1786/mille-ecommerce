@@ -75,6 +75,9 @@ namespace Mille.Infrastructure.Persistence.Repositories
         public async Task<CouponUsage?> GetUsageByOrderIdAsync(Guid orderId, CancellationToken ct)
             => await _context.CouponUsages.FirstOrDefaultAsync(u => u.OrderId == orderId, ct);
 
+        public async Task<bool> IsUsedByUserAsync(int couponId, Guid userId, CancellationToken ct)
+                    => await _context.CouponUsages.AnyAsync(u => u.CouponId == couponId && u.UserId == userId, ct);
+
         public void AddUsage(CouponUsage usage) => _context.CouponUsages.Add(usage);
         public void RemoveUsage(CouponUsage usage) => _context.CouponUsages.Remove(usage);
 

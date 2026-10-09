@@ -16,8 +16,9 @@ namespace Mille.Domain.Interfaces
             CancellationToken ct = default);
 
         Task<int> CountAsync(string? keyword = null, bool? isActive = null, CancellationToken ct = default);
-
         Task<CouponUsage?> GetUsageByOrderIdAsync(Guid orderId, CancellationToken ct = default);
+        Task<bool> IsUsedByUserAsync(int couponId, Guid userId, CancellationToken ct = default);
+
         void AddUsage(CouponUsage usage);
         void RemoveUsage(CouponUsage usage);
     }
