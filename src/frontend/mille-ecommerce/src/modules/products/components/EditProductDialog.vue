@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { watch } from 'vue'
+import { ref, watch } from 'vue'
 import { useForm } from '@tanstack/vue-form'
 import { Plus, Upload, X, Trash2 } from 'lucide-vue-next'
-import { z } from 'zod'
 import {
   Dialog,
   DialogContent,
@@ -11,23 +10,19 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useUpdateProduct } from '../composables/useUpdateProduct'
+import { useUpdateProductImages } from '../composables/useUpdateProductImages'
 import { useGetProduct } from '../composables/useGetProduct'
 import {
-  createProductSchema,
+  updateProductSchema,
+  updateProductImagesSchema,
   PRODUCT_STATUS_LABELS,
-  type CreateProductRequest,
+  type UpdateProductRequest,
   type ProductStatus,
   type VariantRequest,
 } from '../types/product'
@@ -44,14 +39,19 @@ const emit = defineEmits<{
 }>()
 
 const { isLoading, errorMessage, errors, updateProduct } = useUpdateProduct()
+const {
+  isLoading: isImagesLoading,
+  errorMessage: imagesErrorMessage,
+  errors: imagesErrors,
+  updateProductImages,
+} = useUpdateProductImages()
 const { product, fetchProduct } = useGetProduct()
 const { categories, fetchCategories } = useGetCategories()
 
 const STATUS_OPTIONS: ProductStatus[] = ['Active', 'OutOfStock', 'Contact', 'Discontinued']
 
-const editSchema = createProductSchema.extend({
-  images: z.array(z.file()),
-})
+const newImages = ref<File[]>([])
+const imagesValidationError = ref<string | null>(null)
 
 function emptyVariant(): VariantRequest {
   return { sku: '', price: 0, stock: 0, size: '', color: '' }
@@ -63,10 +63,9 @@ const form = useForm({
     description: '',
     categoryId: 0,
     variants: [emptyVariant()],
-    images: [] as File[],
     status: 'Active' as ProductStatus,
-  } as CreateProductRequest,
-  validators: { onSubmit: editSchema },
+  } as UpdateProductRequest,
+  validators: { onSubmit: updateProductSchema },
   onSubmit: async ({ value }) => {
     if (!props.productId) return
     const success = await updateProduct(props.productId, value)
@@ -95,13 +94,14 @@ async function prefill(id: string) {
       color: v.color ?? '',
     })),
   )
-  form.setFieldValue('images', [])
 }
 
 watch(
   () => props.open,
   (isOpen) => {
     if (isOpen && props.productId) {
+      newImages.value = []
+      imagesValidationError.value = null
       prefill(props.productId)
       fetchCategories({ page: 1, pageSize: 100, includeDeleted: false })
     }
@@ -128,16 +128,31 @@ function removeVariant(idx: number) {
 function handleFiles(event: Event) {
   const input = event.target as HTMLInputElement
   if (!input.files) return
-  form.setFieldValue('images', Array.from(input.files))
+  newImages.value = Array.from(input.files)
+  imagesValidationError.value = null
   input.value = ''
 }
 
 function removeImage(idx: number) {
-  const current = form.state.values.images as File[]
-  form.setFieldValue(
-    'images',
-    current.filter((_, i) => i !== idx),
-  )
+  newImages.value = newImages.value.filter((_, i) => i !== idx)
+}
+
+async function handleUpdateImages() {
+  if (!props.productId) return
+
+  const parsed = updateProductImagesSchema.safeParse({ images: newImages.value })
+  if (!parsed.success) {
+    imagesValidationError.value = parsed.error.issues[0]?.message ?? 'Invalid images'
+    return
+  }
+  imagesValidationError.value = null
+
+  const success = await updateProductImages(props.productId, newImages.value)
+  if (success) {
+    newImages.value = []
+    await fetchProduct(props.productId)
+    emit('success')
+  }
 }
 
 function getErrorMessage(errs: any[]): string | undefined {
@@ -152,9 +167,7 @@ function getErrorMessage(errs: any[]): string | undefined {
     <DialogContent class="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
       <DialogHeader>
         <DialogTitle>Edit Product</DialogTitle>
-        <DialogDescription>
-          Update product details. Leave images empty to keep current ones.
-        </DialogDescription>
+        <DialogDescription> Update product details and images. They are saved separately. </DialogDescription>
       </DialogHeader>
 
       <form class="space-y-4" @submit.prevent.stop="form.handleSubmit">
@@ -246,11 +259,7 @@ function getErrorMessage(errs: any[]): string | undefined {
 
           <form.Field name="variants" v-slot="{ field, state }">
             <div class="space-y-3">
-              <Card
-                v-for="(_, idx) in field.state.value as VariantRequest[]"
-                :key="idx"
-                class="relative pt-4"
-              >
+              <Card v-for="(_, idx) in field.state.value as VariantRequest[]" :key="idx" class="relative pt-4">
                 <CardContent class="p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <Button
                     v-if="(field.state.value as VariantRequest[]).length > 1"
@@ -348,6 +357,30 @@ function getErrorMessage(errs: any[]): string | undefined {
           </form.Field>
         </div>
 
+        <!-- Errors -->
+        <div v-if="errorMessage || errors.length" class="rounded-md bg-destructive/15 p-3 text-xs text-destructive">
+          <p v-if="errorMessage" class="font-medium">{{ errorMessage }}</p>
+          <ul v-if="errors.length" class="list-disc pl-4 space-y-1 mt-1">
+            <li v-for="(err, idx) in errors" :key="idx">{{ err }}</li>
+          </ul>
+        </div>
+
+        <div class="flex justify-end">
+          <form.Subscribe v-slot="{ canSubmit }">
+            <Button type="submit" :disabled="!canSubmit || isLoading">
+              {{ isLoading ? 'Saving...' : 'Save Changes' }}
+            </Button>
+          </form.Subscribe>
+        </div>
+      </form>
+
+      <!-- Images (separate API: PUT /api/Products/{id}/images) -->
+      <div class="space-y-4 border-t pt-4">
+        <div>
+          <Label class="text-base">Images</Label>
+          <p class="text-xs text-muted-foreground">Uploading new images replaces all current images.</p>
+        </div>
+
         <!-- Current Images -->
         <div v-if="product?.images?.length" class="grid gap-2">
           <Label>Current Images</Label>
@@ -368,80 +401,71 @@ function getErrorMessage(errs: any[]): string | undefined {
           </div>
         </div>
 
-        <!-- Images Upload -->
-        <form.Field name="images" v-slot="{ field, state }">
-          <div class="grid gap-2">
-            <Label>Replace Images (optional)</Label>
-            <div class="flex items-center gap-3">
-              <Button type="button" variant="outline" as-child>
-                <label class="cursor-pointer">
-                  <Upload class="mr-2 size-4" /> Choose new images
-                  <input
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    class="hidden"
-                    @change="handleFiles"
-                  />
-                </label>
-              </Button>
-              <span class="text-xs text-muted-foreground">
-                {{ (field.state.value as File[]).length }} new file(s) selected
-              </span>
-            </div>
-
-            <div v-if="(field.state.value as File[]).length" class="flex flex-wrap gap-2 pt-1">
-              <div
-                v-for="(file, idx) in field.state.value as File[]"
-                :key="idx"
-                class="flex items-center gap-1.5 rounded-md border bg-muted/50 px-2.5 py-1 text-xs"
-              >
-                <span class="max-w-36 truncate">{{ file.name }}</span>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  class="size-4 text-muted-foreground hover:text-destructive"
-                  @click="removeImage(idx)"
-                >
-                  <X class="size-3" />
-                </Button>
-              </div>
-            </div>
-
-            <p v-if="getErrorMessage(state.meta.errors)" class="text-xs text-destructive">
-              {{ getErrorMessage(state.meta.errors) }}
-            </p>
+        <!-- New images -->
+        <div class="grid gap-2">
+          <Label>Replace Images</Label>
+          <div class="flex items-center gap-3">
+            <Button type="button" variant="outline" as-child>
+              <label class="cursor-pointer">
+                <Upload class="mr-2 size-4" /> Choose new images
+                <input type="file" accept="image/*" multiple class="hidden" @change="handleFiles" />
+              </label>
+            </Button>
+            <span class="text-xs text-muted-foreground"> {{ newImages.length }} new file(s) selected </span>
           </div>
-        </form.Field>
 
-        <!-- Errors -->
+          <div v-if="newImages.length" class="flex flex-wrap gap-2 pt-1">
+            <div
+              v-for="(file, idx) in newImages"
+              :key="idx"
+              class="flex items-center gap-1.5 rounded-md border bg-muted/50 px-2.5 py-1 text-xs"
+            >
+              <span class="max-w-36 truncate">{{ file.name }}</span>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                class="size-4 text-muted-foreground hover:text-destructive"
+                @click="removeImage(idx)"
+              >
+                <X class="size-3" />
+              </Button>
+            </div>
+          </div>
+
+          <p v-if="imagesValidationError" class="text-xs text-destructive">
+            {{ imagesValidationError }}
+          </p>
+        </div>
+
+        <!-- Image errors -->
         <div
-          v-if="errorMessage || errors.length"
+          v-if="imagesErrorMessage || imagesErrors.length"
           class="rounded-md bg-destructive/15 p-3 text-xs text-destructive"
         >
-          <p v-if="errorMessage" class="font-medium">{{ errorMessage }}</p>
-          <ul v-if="errors.length" class="list-disc pl-4 space-y-1 mt-1">
-            <li v-for="(err, idx) in errors" :key="idx">{{ err }}</li>
+          <p v-if="imagesErrorMessage" class="font-medium">{{ imagesErrorMessage }}</p>
+          <ul v-if="imagesErrors.length" class="list-disc pl-4 space-y-1 mt-1">
+            <li v-for="(err, idx) in imagesErrors" :key="idx">{{ err }}</li>
           </ul>
         </div>
 
-        <DialogFooter>
-          <Button
-            type="button"
-            variant="outline"
-            :disabled="isLoading"
-            @click="handleOpenChange(false)"
-          >
-            Cancel
+        <div class="flex justify-end">
+          <Button type="button" :disabled="isImagesLoading || !newImages.length" @click="handleUpdateImages">
+            {{ isImagesLoading ? 'Uploading...' : 'Update Images' }}
           </Button>
-          <form.Subscribe v-slot="{ canSubmit }">
-            <Button type="submit" :disabled="!canSubmit || isLoading">
-              {{ isLoading ? 'Saving...' : 'Save Changes' }}
-            </Button>
-          </form.Subscribe>
-        </DialogFooter>
-      </form>
+        </div>
+      </div>
+
+      <DialogFooter>
+        <Button
+          type="button"
+          variant="outline"
+          :disabled="isLoading || isImagesLoading"
+          @click="handleOpenChange(false)"
+        >
+          Close
+        </Button>
+      </DialogFooter>
     </DialogContent>
   </Dialog>
 </template>

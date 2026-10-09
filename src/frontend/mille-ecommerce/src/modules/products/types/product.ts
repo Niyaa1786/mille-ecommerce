@@ -28,11 +28,16 @@ export const createProductSchema = z.object({
   }),
 })
 
-export const updateProductSchema = createProductSchema
+export const updateProductSchema = createProductSchema.omit({ images: true })
+
+export const updateProductImagesSchema = z.object({
+  images: z.array(z.file()).min(1, 'Required at least 1 image'),
+})
 
 export type VariantRequest = z.infer<typeof variantSchema>
 export type CreateProductRequest = z.infer<typeof createProductSchema>
 export type UpdateProductRequest = z.infer<typeof updateProductSchema>
+export type UpdateProductImagesRequest = z.infer<typeof updateProductImagesSchema>
 
 export type VariantResponse = {
   id: string
@@ -62,7 +67,12 @@ export type CreateProductResponse = {
   images: ImageResponse[]
 }
 
-export type UpdateProductResponse = CreateProductResponse
+export type UpdateProductResponse = Omit<CreateProductResponse, 'images'>
+
+export type UpdateProductImagesResponse = {
+  productId: string
+  images: ImageResponse[]
+}
 
 export type ProductsResponse = {
   items: ProductList[]
