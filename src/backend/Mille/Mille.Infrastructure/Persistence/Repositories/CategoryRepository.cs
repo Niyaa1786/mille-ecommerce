@@ -30,12 +30,7 @@ namespace Mille.Infrastructure.Persistence.Repositories
                 .FirstOrDefaultAsync(c => c.Name == name && !c.IsDeleted, ct);
 
         public async Task<bool> IsExistByName(string name, string? excludeName = null, CancellationToken ct = default)
-        {
-            return await _context.Categories
-                .AnyAsync(c => c.Name == name
-                            && !c.IsDeleted
-                            && (excludeName == null || c.Name != excludeName), ct);
-        }
+            => await _context.Categories.AnyAsync(c => c.Name == name && (excludeName == null || c.Name != excludeName), ct);
 
         public async Task<int> CountAsync(bool includeDeleted = false, CancellationToken ct = default)
         {
@@ -63,7 +58,7 @@ namespace Mille.Infrastructure.Persistence.Repositories
 
             if (!string.IsNullOrEmpty(keyword))
                 query = query.Where(
-                    c => c.Name.Contains(keyword) || 
+                    c => c.Name.Contains(keyword) ||
                     (c.Description != null && c.Description.Contains(keyword)));
 
             return await query
