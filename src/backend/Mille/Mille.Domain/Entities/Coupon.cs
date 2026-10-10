@@ -109,7 +109,7 @@ namespace Mille.Domain.Entities
 
         private void EnsureCanBeApplied(decimal orderAmount)
         {
-            var now = DateTime.UtcNow;
+            var now = DateTime.Now;
 
             if (!IsActive)
                 throw new DomainException("Coupon is not active.");
