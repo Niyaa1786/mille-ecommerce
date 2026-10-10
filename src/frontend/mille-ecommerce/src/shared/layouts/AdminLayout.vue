@@ -69,9 +69,7 @@
     </Sidebar>
 
     <SidebarInset>
-      <header
-        class="flex h-14 shrink-0 items-center gap-2 border-b border-border bg-background/95 px-4 backdrop-blur"
-      >
+      <header class="flex h-14 shrink-0 items-center gap-2 border-b border-border bg-background/95 px-4 backdrop-blur">
         <SidebarTrigger class="-ml-1" />
         <Separator orientation="vertical" class="mr-2 h-4" />
         <h1 class="text-sm font-medium">{{ currentPageTitle }}</h1>
@@ -94,7 +92,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-import { Package, Tags, ShoppingBag, LogOut, Store, ArrowLeft } from 'lucide-vue-next'
+import { Package, Tags, ShoppingBag, Ticket, LogOut, Store, ArrowLeft } from 'lucide-vue-next'
 
 import {
   Sidebar,
@@ -129,6 +127,7 @@ const navItems: NavItem[] = [
   { label: 'Products', to: '/admin/products', icon: Package },
   { label: 'Categories', to: '/admin/categories', icon: Tags },
   { label: 'Orders', to: '/admin/orders', icon: ShoppingBag },
+  { label: 'Coupons', to: '/admin/coupons', icon: Ticket },
 ]
 
 function isActive(to: string): boolean {

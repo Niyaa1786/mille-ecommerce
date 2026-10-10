@@ -26,3 +26,15 @@ export type OrderPaginationRequest = {
   status?: OrderStatus
   keyword?: string
 }
+
+export type CouponPaginationRequest = {
+  page: number
+  pageSize: number
+  keyword?: string
+  isActive?: boolean
+}
+
+export type ReviewPaginationRequest = {
+  page: number
+  pageSize: number
+}

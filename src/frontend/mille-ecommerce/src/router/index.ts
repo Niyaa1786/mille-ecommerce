@@ -4,6 +4,7 @@ import RegisterView from '@/modules/auth/views/RegisterView.vue'
 import { useCartStore } from '@/modules/carts/stores/cartStore'
 import CartView from '@/modules/carts/views/CartView.vue'
 import CategoryList from '@/modules/categories/views/CategoryList.vue'
+import CouponList from '@/modules/coupons/views/CouponList.vue'
 import CheckoutView from '@/modules/orders/views/CheckoutView.vue'
 import MyOrdersView from '@/modules/orders/views/MyOrdersView.vue'
 import OrderList from '@/modules/orders/views/OrderList.vue'
@@ -63,6 +64,15 @@ const router = createRouter({
       path: '/admin/orders',
       name: 'OrderList',
       component: OrderList,
+      meta: {
+        layout: 'admin',
+        requiresAuth: true,
+      },
+    },
+    {
+      path: '/admin/coupons',
+      name: 'CouponList',
+      component: CouponList,
       meta: {
         layout: 'admin',
         requiresAuth: true,
