@@ -72,16 +72,16 @@ Trạng thái: ✅ Done · 🚧 In Progress · ⬜ To Do
 
 | Chức năng | Mô tả | Trạng thái |
 |---|---|---|
-| Create Review | Đánh giá sản phẩm (chỉ khi đơn hàng đã hoàn thành) | ⬜ |
-| Get Reviews by Product | Danh sách đánh giá theo sản phẩm | ⬜ |
+| Create Review | Đánh giá sản phẩm (chỉ khi đơn hàng đã hoàn thành, mỗi order item 1 đánh giá) | ✅ |
+| Get Reviews by Product | Danh sách đánh giá theo sản phẩm (phân trang, kèm điểm trung bình) | ✅ |
 
 ### 7. Coupon
 
 | Chức năng | Mô tả | Trạng thái |
 |---|---|---|
-| CRUD Coupon (Admin) | Quản lý mã giảm giá | ⬜ |
-| Validate Coupon | Kiểm tra mã hợp lệ (hạn dùng, số lượt, điều kiện đơn tối thiểu) | ⬜ |
-| Apply Coupon | Áp dụng mã giảm giá vào đơn hàng | ⬜ |
+| CRUD Coupon (Admin) | Quản lý mã giảm giá (xóa mềm bằng cách vô hiệu hóa nếu mã đã được dùng) | ✅ |
+| Validate Coupon | Kiểm tra mã hợp lệ (hạn dùng, số lượt, điều kiện đơn tối thiểu) trên giỏ hàng hiện tại | ✅ |
+| Apply Coupon | Áp dụng mã giảm giá khi checkout (`couponCode` trong Create Order), hoàn lượt dùng khi hủy đơn | ✅ |
 
 ### 8. Payment nâng cao (mở rộng)
 
@@ -99,8 +99,8 @@ Trạng thái: ✅ Done · 🚧 In Progress · ⬜ To Do
 3. Cart                             ✅ Done
 4. Order                            ✅ Done
 5. Payment (COD)                    ✅ Done
-6. Review
-7. Coupon
+6. Review                          ✅ Done
+7. Coupon                          ✅ Done
 8. Payment nâng cao (VNPay/Stripe)
 9. Redis caching (mở rộng)
 10. Docker hóa (mở rộng)
