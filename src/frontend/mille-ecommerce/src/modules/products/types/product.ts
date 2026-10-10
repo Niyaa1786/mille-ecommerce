@@ -28,13 +28,20 @@ export const createProductSchema = z.object({
   }),
 })
 
-export const updateProductSchema = createProductSchema.omit({ images: true })
+export const updateVariantSchema = variantSchema.extend({
+  id: z.string().optional(),
+})
+
+export const updateProductSchema = createProductSchema.omit({ images: true }).extend({
+  variants: z.array(updateVariantSchema).min(1, 'At least one variant is required'),
+})
 
 export const updateProductImagesSchema = z.object({
   images: z.array(z.file()).min(1, 'Required at least 1 image'),
 })
 
 export type VariantRequest = z.infer<typeof variantSchema>
+export type UpdateVariantRequest = z.infer<typeof updateVariantSchema>
 export type CreateProductRequest = z.infer<typeof createProductSchema>
 export type UpdateProductRequest = z.infer<typeof updateProductSchema>
 export type UpdateProductImagesRequest = z.infer<typeof updateProductImagesSchema>

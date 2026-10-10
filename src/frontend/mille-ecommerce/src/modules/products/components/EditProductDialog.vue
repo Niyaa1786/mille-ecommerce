@@ -24,7 +24,7 @@ import {
   PRODUCT_STATUS_LABELS,
   type UpdateProductRequest,
   type ProductStatus,
-  type VariantRequest,
+  type UpdateVariantRequest,
 } from '../types/product'
 import { useGetCategories } from '@/modules/categories/composables/useGetCategories'
 
@@ -53,7 +53,7 @@ const STATUS_OPTIONS: ProductStatus[] = ['Active', 'OutOfStock', 'Contact', 'Dis
 const newImages = ref<File[]>([])
 const imagesValidationError = ref<string | null>(null)
 
-function emptyVariant(): VariantRequest {
+function emptyVariant(): UpdateVariantRequest {
   return { sku: '', price: 0, stock: 0, size: '', color: '' }
 }
 
@@ -87,6 +87,7 @@ async function prefill(id: string) {
   form.setFieldValue(
     'variants',
     product.value.variants.map((v) => ({
+      id: v.id,
       sku: v.sku,
       price: v.price,
       stock: v.stock,
@@ -257,12 +258,21 @@ function getErrorMessage(errs: any[]): string | undefined {
             </Button>
           </div>
 
+          <p class="text-xs text-muted-foreground">
+            SKU of an existing variant cannot be changed. A variant that already has orders cannot be removed and its
+            size/color are locked (price and stock can still be changed). To change them, add a new variant.
+          </p>
+
           <form.Field name="variants" v-slot="{ field, state }">
             <div class="space-y-3">
-              <Card v-for="(_, idx) in field.state.value as VariantRequest[]" :key="idx" class="relative pt-4">
+              <Card
+                v-for="(variant, idx) in field.state.value as UpdateVariantRequest[]"
+                :key="idx"
+                class="relative pt-4"
+              >
                 <CardContent class="p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <Button
-                    v-if="(field.state.value as VariantRequest[]).length > 1"
+                    v-if="(field.state.value as UpdateVariantRequest[]).length > 1"
                     type="button"
                     variant="ghost"
                     size="icon"
@@ -280,6 +290,7 @@ function getErrorMessage(errs: any[]): string | undefined {
                         :id="f.name"
                         :model-value="f.state.value"
                         placeholder="SKU-001"
+                        :disabled="!!variant.id"
                         @update:model-value="(v) => f.handleChange(String(v))"
                       />
                       <p v-if="getErrorMessage(s.meta.errors)" class="text-xs text-destructive">

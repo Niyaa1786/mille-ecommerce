@@ -44,7 +44,8 @@ export const productService = {
       categoryId: data.categoryId,
       status: data.status,
       variants: data.variants.map((v) => ({
-        sku: v.sku,
+        id: v.id,
+        sku: v.sku.trim(),
         price: v.price,
         stock: v.stock,
         size: v.size || undefined,
