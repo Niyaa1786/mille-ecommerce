@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto max-w-4xl">
+  <div class="mx-auto max-w-7xl">
     <h1 class="mb-6 text-2xl font-bold">Checkout</h1>
 
     <!-- Loading -->
