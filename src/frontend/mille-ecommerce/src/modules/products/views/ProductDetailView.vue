@@ -27,16 +27,8 @@
         <!-- Gallery -->
         <div class="flex flex-col gap-3">
           <div class="aspect-square overflow-hidden rounded-lg border bg-muted">
-            <img
-              v-if="activeImage"
-              :src="activeImage"
-              :alt="product.name"
-              class="h-full w-full object-cover"
-            />
-            <div
-              v-else
-              class="flex h-full w-full items-center justify-center text-muted-foreground"
-            >
+            <img v-if="activeImage" :src="activeImage" :alt="product.name" class="h-full w-full object-cover" />
+            <div v-else class="flex h-full w-full items-center justify-center text-muted-foreground">
               <ImageOff class="h-10 w-10" />
             </div>
           </div>
@@ -68,9 +60,7 @@
 
           <div class="text-2xl font-semibold">
             {{
-              product.status === 'Contact'
-                ? 'Please contact us'
-                : formatCurrency(selectedVariant?.price ?? minPrice)
+              product.status === 'Contact' ? 'Please contact us' : formatCurrency(selectedVariant?.price ?? minPrice)
             }}
           </div>
 
@@ -115,27 +105,15 @@
             </div>
           </div>
 
-          <p v-if="!selectedVariant" class="text-sm text-destructive">
-            This combination is currently unavailable.
-          </p>
-          <p v-else-if="selectedVariant.stock === 0" class="text-sm text-destructive">
-            Out of stock.
-          </p>
-          <p v-else class="text-sm text-muted-foreground">
-            {{ selectedVariant.stock }} item(s) in stock
-          </p>
+          <p v-if="!selectedVariant" class="text-sm text-destructive">This combination is currently unavailable.</p>
+          <p v-else-if="selectedVariant.stock === 0" class="text-sm text-destructive">Out of stock.</p>
+          <p v-else class="text-sm text-muted-foreground">{{ selectedVariant.stock }} item(s) in stock</p>
 
           <!-- Quantity -->
           <div class="flex items-center gap-3">
             <span class="text-sm font-medium">Quantity</span>
             <div class="flex items-center rounded-md border">
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon-sm"
-                :disabled="quantity <= 1"
-                @click="quantity--"
-              >
+              <Button type="button" variant="ghost" size="icon-sm" :disabled="quantity <= 1" @click="quantity--">
                 <Minus class="h-4 w-4" />
               </Button>
               <span class="w-10 text-center text-sm">{{ quantity }}</span>
@@ -153,12 +131,7 @@
 
           <p v-if="addToCartError" class="text-sm text-destructive">{{ addToCartError }}</p>
 
-          <Button
-            class="w-fit"
-            size="lg"
-            :disabled="!canAddToCart || isAddingToCart"
-            @click="handleAddToCart"
-          >
+          <Button class="w-fit" size="lg" :disabled="!canAddToCart || isAddingToCart" @click="handleAddToCart">
             <ShoppingCart class="h-4 w-4" />
             {{ isAddingToCart ? 'Adding...' : 'Add to cart' }}
           </Button>
@@ -170,6 +143,9 @@
         <h2 class="mb-3 text-lg font-semibold">Product description</h2>
         <p class="whitespace-pre-line text-sm text-muted-foreground">{{ product.description }}</p>
       </div>
+
+      <!-- Reviews -->
+      <ProductReviews :product-id="product.id" />
     </div>
   </div>
 </template>
@@ -186,6 +162,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 
 import { useGetProduct } from '../composables/useGetProduct'
 import { useAddToCart } from '@/modules/carts/composables/useAddToCart'
+import ProductReviews from '@/modules/reviews/components/ProductReviews.vue'
 import { PRODUCT_STATUS_LABELS } from '../types/product'
 import { formatCurrency } from '@/shared/utils/format'
 
@@ -227,17 +204,13 @@ const selectedVariant = computed(() => {
   )
 })
 
-const canAddToCart = computed(
-  () => !!selectedVariant.value && selectedVariant.value.stock > 0 && quantity.value > 0,
-)
+const canAddToCart = computed(() => !!selectedVariant.value && selectedVariant.value.stock > 0 && quantity.value > 0)
 
 function initSelection() {
   if (!product.value) return
 
   activeImage.value =
-    product.value.images.find((img) => img.isThumbnail)?.imageUrl ??
-    product.value.images[0]?.imageUrl ??
-    null
+    product.value.images.find((img) => img.isThumbnail)?.imageUrl ?? product.value.images[0]?.imageUrl ?? null
 
   selectedSize.value = product.value.variants[0]?.size ?? null
   selectedColor.value = product.value.variants[0]?.color ?? null

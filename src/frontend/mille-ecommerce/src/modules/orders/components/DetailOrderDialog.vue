@@ -1,29 +1,20 @@
 <script setup lang="ts">
-import { watch } from 'vue'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
+import { computed, ref, watch } from 'vue'
+import { toast } from 'vue-sonner'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Separator } from '@/components/ui/separator'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 
+import CreateReviewDialog from '@/modules/reviews/components/CreateReviewDialog.vue'
 import { useGetOrder } from '../composables/useGetOrder'
 import {
   ORDER_STATUS_LABELS,
   PAYMENT_METHOD_LABELS,
   PAYMENT_STATUS_LABELS,
+  type OrderItemDto,
   type OrderStatus,
   type PaymentMethod,
   type PaymentStatus,
@@ -33,6 +24,7 @@ import { formatCurrency, formatDate } from '@/shared/utils/format'
 const props = defineProps<{
   orderId: string | null
   open: boolean
+  allowReview?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -48,6 +40,21 @@ watch(
   },
   { immediate: true },
 )
+
+const showReview = computed(() => props.allowReview && order.value?.status === 'Completed')
+
+// ===== Review dialog =====
+const reviewOpen = ref(false)
+const reviewItem = ref<OrderItemDto | null>(null)
+
+function openReview(item: OrderItemDto) {
+  reviewItem.value = item
+  reviewOpen.value = true
+}
+
+function handleReviewSuccess() {
+  toast.success('Review submitted successfully')
+}
 
 function handleOpenChange(value: boolean) {
   emit('update:open', value)
@@ -130,6 +137,7 @@ function paymentStatusLabel(status: string): string {
                   <TableHead class="text-right">Qty</TableHead>
                   <TableHead class="text-right">Unit Price</TableHead>
                   <TableHead class="text-right">Subtotal</TableHead>
+                  <TableHead v-if="showReview" class="text-right">Review</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -141,10 +149,13 @@ function paymentStatusLabel(status: string): string {
                   <TableCell class="text-right font-medium">
                     {{ formatCurrency(item.subtotal) }}
                   </TableCell>
+                  <TableCell v-if="showReview" class="text-right">
+                    <Button variant="outline" size="sm" @click="openReview(item)">Review</Button>
+                  </TableCell>
                 </TableRow>
 
                 <TableRow v-if="!order.items?.length">
-                  <TableCell colspan="5" class="h-20 text-center text-muted-foreground">
+                  <TableCell :colspan="showReview ? 6 : 5" class="h-20 text-center text-muted-foreground">
                     No items
                   </TableCell>
                 </TableRow>
@@ -154,7 +165,10 @@ function paymentStatusLabel(status: string): string {
 
           <div class="flex justify-end gap-6 pt-2 text-sm">
             <div class="text-muted-foreground">
-              Discount:
+              Discount<template v-if="order.couponCode">
+                (<span class="font-mono text-xs">{{ order.couponCode }}</span
+                >)</template
+              >:
               <span class="text-foreground">{{ formatCurrency(order.discountAmount) }}</span>
             </div>
             <div class="font-semibold">Total: {{ formatCurrency(order.totalAmount) }}</div>
@@ -201,12 +215,12 @@ function paymentStatusLabel(status: string): string {
               <p class="text-xs text-muted-foreground">{{ formatDate(history.createdAt) }}</p>
             </li>
 
-            <li v-if="!order.statusHistories?.length" class="text-sm text-muted-foreground">
-              No history
-            </li>
+            <li v-if="!order.statusHistories?.length" class="text-sm text-muted-foreground">No history</li>
           </ol>
         </div>
       </div>
     </DialogContent>
   </Dialog>
+
+  <CreateReviewDialog v-model:open="reviewOpen" :order-item="reviewItem" @success="handleReviewSuccess" />
 </template>

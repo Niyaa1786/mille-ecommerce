@@ -43,6 +43,7 @@ export const createOrderSchema = z.object({
   paymentMethod: z.enum(['COD', 'VNPay', 'Stripe'], {
     message: 'Invalid payment method',
   }),
+  couponCode: z.string().max(50, 'Coupon code must not exceed 50 characters').optional(),
 })
 
 export const updateOrderStatusSchema = z.object({
@@ -80,6 +81,7 @@ export type GetOrderResponse = {
   shippingAddress: string
   totalAmount: number
   discountAmount: number
+  couponCode: string | null
   status: string
   createdAt: string
   updatedAt: string

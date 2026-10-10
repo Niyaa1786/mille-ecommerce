@@ -3,10 +3,7 @@
     <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
       <h1 class="text-2xl font-bold">My Orders</h1>
 
-      <Select
-        :model-value="statusFilter"
-        @update:model-value="(v) => onStatusChange(v as OrderStatus | 'All')"
-      >
+      <Select :model-value="statusFilter" @update:model-value="(v) => onStatusChange(v as OrderStatus | 'All')">
         <SelectTrigger class="w-44">
           <SelectValue placeholder="All statuses" />
         </SelectTrigger>
@@ -45,9 +42,7 @@
       <Card v-for="order in orders" :key="order.id">
         <CardHeader class="flex flex-row flex-wrap items-start justify-between gap-2">
           <div>
-            <CardTitle class="font-mono text-sm">
-              #{{ order.id.slice(0, 8).toUpperCase() }}
-            </CardTitle>
+            <CardTitle class="font-mono text-sm"> #{{ order.id.slice(0, 8).toUpperCase() }} </CardTitle>
             <CardDescription>{{ formatDate(order.createdAt) }}</CardDescription>
           </div>
           <Badge :variant="statusVariant(order.status)">{{ statusLabel(order.status) }}</Badge>
@@ -100,9 +95,7 @@
         >
           Previous
         </Button>
-        <span class="text-sm text-muted-foreground">
-          Page {{ pagination.page }} / {{ pagination.totalPages }}
-        </span>
+        <span class="text-sm text-muted-foreground"> Page {{ pagination.page }} / {{ pagination.totalPages }} </span>
         <Button
           variant="outline"
           size="sm"
@@ -114,13 +107,9 @@
       </div>
     </div>
 
-    <DetailOrderDialog v-model:open="detailOpen" :order-id="detailOrderId" />
+    <DetailOrderDialog v-model:open="detailOpen" :order-id="detailOrderId" allow-review />
 
-    <CancelOrderDialog
-      v-model:open="cancelDialogOpen"
-      :order="orderToCancel"
-      @success="handleCancelSuccess"
-    />
+    <CancelOrderDialog v-model:open="cancelDialogOpen" :order="orderToCancel" @success="handleCancelSuccess" />
   </div>
 </template>
 
@@ -134,21 +123,8 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Separator } from '@/components/ui/separator'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 import CancelOrderDialog from '../components/CancelOrderDialog.vue'
 import DetailOrderDialog from '../components/DetailOrderDialog.vue'
