@@ -8,6 +8,7 @@ namespace Mille.Infrastructure.Persistence.Repositories
     public class ProductVariantRepository : IProductVariantRepository
     {
         private readonly AppDbContext _context;
+
         public ProductVariantRepository(AppDbContext context) => _context = context;
 
         public async Task<IEnumerable<ProductVariant>> GetAllAsync(CancellationToken ct)
@@ -31,6 +32,9 @@ namespace Mille.Infrastructure.Persistence.Repositories
 
         public async Task<bool> IsExistBySkuAsync(string sku, CancellationToken ct)
             => await _context.ProductVariants.AnyAsync(v => v.SKU == sku, ct);
+
+        public async Task<bool> HasOrdersAsync(Guid variantId, CancellationToken ct)
+            => await _context.OrderItems.AnyAsync(i => i.ProductVariantId == variantId, ct);
 
         public void Add(ProductVariant entity) => _context.ProductVariants.Add(entity);
         public void Update(ProductVariant entity) => _context.ProductVariants.Update(entity);

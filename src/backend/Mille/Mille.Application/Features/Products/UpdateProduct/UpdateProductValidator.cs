@@ -19,6 +19,9 @@ namespace Mille.Application.Features.Products.UpdateProduct
             RuleFor(x => x.Status)
                 .IsInEnum().WithMessage("Invalid status.");
 
+            RuleFor(x => x.Variants)
+                .NotEmpty().WithMessage("A product must have at least one variant.");
+
             RuleForEach(x => x.Variants).ChildRules(v =>
             {
                 v.RuleFor(x => x.SKU)

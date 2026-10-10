@@ -16,6 +16,7 @@ namespace Mille.Application.Features.Products.UpdateProduct
     }
     public class UpdateVariantRequest
     {
+        public Guid? Id { get; set; }
         public string SKU { get; set; } = string.Empty;
         public decimal Price { get; set; }
         public int Stock { get; set; }
