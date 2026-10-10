@@ -26,8 +26,7 @@ namespace Mille.Api.Handler
             else if (exception is DomainException domainEx)
             {
                 statusCode = (int)HttpStatusCode.BadRequest;
-                message = "Validation failed.";
-                errors = domainEx.Message;
+                message = domainEx.Message;
             }
             else if (exception is NotFoundException notFoundEx)
             {
