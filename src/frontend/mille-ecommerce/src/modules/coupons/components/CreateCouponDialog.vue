@@ -29,7 +29,7 @@ const emit = defineEmits<{
 const open = ref(false)
 const { isLoading, errorMessage, errors, createCoupon } = useCreateCoupon()
 
-const DISCOUNT_TYPE_OPTIONS: DiscountType[] = ['Percentage', 'FixedAmount']
+const DISCOUNT_TYPE_OPTIONS: DiscountType[] = ['Percentage', 'Fixed']
 
 const form = useForm({
   defaultValues: {

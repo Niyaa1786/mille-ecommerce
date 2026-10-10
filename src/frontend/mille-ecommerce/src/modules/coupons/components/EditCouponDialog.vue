@@ -9,13 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -40,7 +34,7 @@ const emit = defineEmits<{
 
 const { isLoading, errorMessage, errors, updateCoupon } = useUpdateCoupon()
 
-const DISCOUNT_TYPE_OPTIONS: DiscountType[] = ['Percentage', 'FixedAmount']
+const DISCOUNT_TYPE_OPTIONS: DiscountType[] = ['Percentage', 'Fixed']
 
 const form = useForm({
   defaultValues: {
@@ -117,11 +111,7 @@ function handleOpenChange(value: boolean) {
                 placeholder="Optional description"
               />
               <p v-if="state.meta.errors.length" class="text-sm text-destructive">
-                {{
-                  typeof state.meta.errors[0] === 'object'
-                    ? state.meta.errors[0]?.message
-                    : state.meta.errors[0]
-                }}
+                {{ typeof state.meta.errors[0] === 'object' ? state.meta.errors[0]?.message : state.meta.errors[0] }}
               </p>
             </div>
           </template>
@@ -144,11 +134,7 @@ function handleOpenChange(value: boolean) {
                 </SelectContent>
               </Select>
               <p v-if="state.meta.errors.length" class="text-sm text-destructive">
-                {{
-                  typeof state.meta.errors[0] === 'object'
-                    ? state.meta.errors[0]?.message
-                    : state.meta.errors[0]
-                }}
+                {{ typeof state.meta.errors[0] === 'object' ? state.meta.errors[0]?.message : state.meta.errors[0] }}
               </p>
             </div>
           </template>
@@ -167,11 +153,7 @@ function handleOpenChange(value: boolean) {
                 placeholder="10"
               />
               <p v-if="state.meta.errors.length" class="text-sm text-destructive">
-                {{
-                  typeof state.meta.errors[0] === 'object'
-                    ? state.meta.errors[0]?.message
-                    : state.meta.errors[0]
-                }}
+                {{ typeof state.meta.errors[0] === 'object' ? state.meta.errors[0]?.message : state.meta.errors[0] }}
               </p>
             </div>
           </template>
@@ -190,11 +172,7 @@ function handleOpenChange(value: boolean) {
                 placeholder="Optional"
               />
               <p v-if="state.meta.errors.length" class="text-sm text-destructive">
-                {{
-                  typeof state.meta.errors[0] === 'object'
-                    ? state.meta.errors[0]?.message
-                    : state.meta.errors[0]
-                }}
+                {{ typeof state.meta.errors[0] === 'object' ? state.meta.errors[0]?.message : state.meta.errors[0] }}
               </p>
             </div>
           </template>
@@ -213,11 +191,7 @@ function handleOpenChange(value: boolean) {
                 placeholder="Optional"
               />
               <p v-if="state.meta.errors.length" class="text-sm text-destructive">
-                {{
-                  typeof state.meta.errors[0] === 'object'
-                    ? state.meta.errors[0]?.message
-                    : state.meta.errors[0]
-                }}
+                {{ typeof state.meta.errors[0] === 'object' ? state.meta.errors[0]?.message : state.meta.errors[0] }}
               </p>
             </div>
           </template>
@@ -236,11 +210,7 @@ function handleOpenChange(value: boolean) {
                 placeholder="Unlimited"
               />
               <p v-if="state.meta.errors.length" class="text-sm text-destructive">
-                {{
-                  typeof state.meta.errors[0] === 'object'
-                    ? state.meta.errors[0]?.message
-                    : state.meta.errors[0]
-                }}
+                {{ typeof state.meta.errors[0] === 'object' ? state.meta.errors[0]?.message : state.meta.errors[0] }}
               </p>
             </div>
           </template>
@@ -258,11 +228,7 @@ function handleOpenChange(value: boolean) {
                 @blur="field.handleBlur"
               />
               <p v-if="state.meta.errors.length" class="text-sm text-destructive">
-                {{
-                  typeof state.meta.errors[0] === 'object'
-                    ? state.meta.errors[0]?.message
-                    : state.meta.errors[0]
-                }}
+                {{ typeof state.meta.errors[0] === 'object' ? state.meta.errors[0]?.message : state.meta.errors[0] }}
               </p>
             </div>
           </template>
@@ -280,11 +246,7 @@ function handleOpenChange(value: boolean) {
                 @blur="field.handleBlur"
               />
               <p v-if="state.meta.errors.length" class="text-sm text-destructive">
-                {{
-                  typeof state.meta.errors[0] === 'object'
-                    ? state.meta.errors[0]?.message
-                    : state.meta.errors[0]
-                }}
+                {{ typeof state.meta.errors[0] === 'object' ? state.meta.errors[0]?.message : state.meta.errors[0] }}
               </p>
             </div>
           </template>
@@ -309,12 +271,7 @@ function handleOpenChange(value: boolean) {
         </ul>
 
         <DialogFooter class="col-span-2">
-          <Button
-            type="button"
-            variant="outline"
-            :disabled="isLoading"
-            @click="handleOpenChange(false)"
-          >
+          <Button type="button" variant="outline" :disabled="isLoading" @click="handleOpenChange(false)">
             Cancel
           </Button>
           <form.Subscribe>

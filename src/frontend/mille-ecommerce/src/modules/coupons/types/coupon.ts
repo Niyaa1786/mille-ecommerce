@@ -1,13 +1,13 @@
 import z from 'zod'
 
-export type DiscountType = 'Percentage' | 'FixedAmount'
+export type DiscountType = 'Percentage' | 'Fixed'
 
 export const DISCOUNT_TYPE_LABELS: Record<DiscountType, string> = {
   Percentage: 'Percentage',
-  FixedAmount: 'Fixed amount',
+  Fixed: 'Fixed amount',
 }
 
-const discountTypeSchema = z.enum(['Percentage', 'FixedAmount'], {
+const discountTypeSchema = z.enum(['Percentage', 'Fixed'], {
   message: 'Invalid discount type',
 })
 
