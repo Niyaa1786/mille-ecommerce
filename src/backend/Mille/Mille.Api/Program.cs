@@ -69,9 +69,9 @@ try
 
     var app = builder.Build();
 
-    app.UseExceptionHandler();
-
     app.UseSerilogRequestLogging();
+
+    app.UseExceptionHandler();
 
     // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())
