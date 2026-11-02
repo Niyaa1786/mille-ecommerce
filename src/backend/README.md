@@ -1,107 +1,130 @@
 # E-Commerce Backend API
 
-Backend API cho hệ thống thương mại điện tử, xây dựng theo Clean Architecture.
+Backend API for an e-commerce system, built with Clean Architecture.
 
 ## Tech Stack
 
 - **Language/Framework:** C#, ASP.NET Core
 - **ORM:** Entity Framework Core
-- **Architecture:** Clean Architecture (không dùng MediatR)
+- **Architecture:** Clean Architecture (without MediatR)
 - **Authentication:** JWT (Access Token + Refresh Token)
 - **Validation:** FluentValidation
 - **Logging:** Serilog
 - **API Documentation:** Scalar
-- **Utility/Extension Tool** Scrutor
-- **Dự kiến mở rộng:** Redis (caching), Docker (containerization)
+- **Utility/Extension Tool:** Scrutor
+- **Containerization:** Docker
+- **Planned extensions:** Redis (caching)
 
-## Danh sách chức năng
+## Feature List
 
-Trạng thái: ✅ Done · 🚧 In Progress · ⬜ To Do
+Status: ✅ Done · 🚧 In Progress · ⬜ To Do
 
 ### 1. Authentication & User
 
-| Chức năng | Mô tả | Trạng thái |
-|---|---|---|
-| Register | Đăng ký tài khoản mới | ✅ |
-| Login | Đăng nhập, trả về JWT access token + refresh token | ✅ |
-| Refresh Token | Cấp lại access token khi hết hạn | ✅ |
-| Logout | Thu hồi refresh token | ✅ |
-| Get Profile | Xem thông tin tài khoản cá nhân |✅ |
-| Update Profile | Cập nhật thông tin cá nhân | ✅ |
-| Manage Address | Thêm/sửa/xóa địa chỉ giao hàng | ✅ |
+| Feature | Description | Status |
+| --- | --- | --- |
+| Register | Register a new account | ✅ |
+| Login | Log in, returns JWT access token + refresh token | ✅ |
+| Refresh Token | Issue a new access token when the old one expires | ✅ |
+| Logout | Revoke the refresh token | ✅ |
+| Get Profile | View personal account information | ✅ |
+| Update Profile | Update personal information | ✅ |
+| Manage Address | Add/edit/delete shipping addresses | ✅ |
 
 ### 2. Category & Product
 
-| Chức năng | Mô tả | Trạng thái |
-|---|---|---|
-| CRUD Category (Admin) | Quản lý danh mục sản phẩm | ✅ |
-| CRUD Product (Admin) | Quản lý sản phẩm | ✅ |
-| CRUD Product Variant (Admin) | Quản lý biến thể (size, màu, giá, tồn kho) | ✅ |
-| Upload Product Image (Admin) | Thêm/xóa ảnh sản phẩm, đặt ảnh đại diện | ✅ |
-| Get Product List | Danh sách sản phẩm (filter theo danh mục, phân trang) | ✅ |
-| Get Product Detail | Chi tiết sản phẩm kèm variant, ảnh, đánh giá | ✅ |
+| Feature | Description | Status |
+| --- | --- | --- |
+| CRUD Category (Admin) | Manage product categories | ✅ |
+| CRUD Product (Admin) | Manage products | ✅ |
+| CRUD Product Variant (Admin) | Manage variants (size, color, price, stock) | ✅ |
+| Upload Product Image (Admin) | Add/remove product images, set the primary image | ✅ |
+| Get Product List | Product list (filter by category, pagination) | ✅ |
+| Get Product Detail | Product details including variants, images, reviews | ✅ |
 
 ### 3. Cart
 
-| Chức năng | Mô tả | Trạng thái |
-|---|---|---|
-| Get Cart | Xem giỏ hàng hiện tại | ✅ |
-| Add to Cart | Thêm sản phẩm vào giỏ | ✅ |
-| Update Cart Item | Cập nhật số lượng | ✅ |
-| Remove Cart Item | Xóa sản phẩm khỏi giỏ | ✅ |
+| Feature | Description | Status |
+| --- | --- | --- |
+| Get Cart | View the current cart | ✅ |
+| Add to Cart | Add a product to the cart | ✅ |
+| Update Cart Item | Update quantity | ✅ |
+| Remove Cart Item | Remove a product from the cart | ✅ |
 
 ### 4. Order
 
-| Chức năng | Mô tả | Trạng thái |
-|---|---|---|
-| Checkout / Create Order | Tạo đơn hàng từ giỏ hàng | ✅ |
-| Get Order List | Danh sách đơn hàng của user | ✅ |
-| Get Order Detail | Chi tiết đơn hàng | ✅ |
-| Cancel Order | Hủy đơn (khi còn ở trạng thái Pending) | ✅ |
-| Update Order Status (Admin) | Chuyển trạng thái đơn hàng, lưu lịch sử | ✅ |
+| Feature | Description | Status |
+| --- | --- | --- |
+| Checkout / Create Order | Create an order from the cart | ✅ |
+| Get Order List | List of the user's orders | ✅ |
+| Get Order Detail | Order details | ✅ |
+| Cancel Order | Cancel an order (while still in Pending status) | ✅ |
+| Update Order Status (Admin) | Change order status and keep a history | ✅ |
 
 ### 5. Payment (COD)
 
-| Chức năng | Mô tả | Trạng thái |
-|---|---|---|
-| Create Payment Record | Tạo bản ghi thanh toán COD khi tạo đơn | ✅ |
-| Confirm Payment (Admin) | Xác nhận đã thu tiền khi giao hàng thành công | ✅ |
-| Get Payment Status | Xem trạng thái thanh toán của đơn hàng | ✅ |
+| Feature | Description | Status |
+| --- | --- | --- |
+| Create Payment Record | Create a COD payment record when the order is created | ✅ |
+| Confirm Payment (Admin) | Confirm payment has been collected upon successful delivery | ✅ |
+| Get Payment Status | View the payment status of an order | ✅ |
 
 ### 6. Review
 
-| Chức năng | Mô tả | Trạng thái |
-|---|---|---|
-| Create Review | Đánh giá sản phẩm (chỉ khi đơn hàng đã hoàn thành, mỗi order item 1 đánh giá) | ✅ |
-| Get Reviews by Product | Danh sách đánh giá theo sản phẩm (phân trang, kèm điểm trung bình) | ✅ |
+| Feature | Description | Status |
+| --- | --- | --- |
+| Create Review | Review a product (only when the order is completed, one review per order item) | ✅ |
+| Get Reviews by Product | List of reviews per product (paginated, with average rating) | ✅ |
 
 ### 7. Coupon
 
-| Chức năng | Mô tả | Trạng thái |
-|---|---|---|
-| CRUD Coupon (Admin) | Quản lý mã giảm giá (xóa mềm bằng cách vô hiệu hóa nếu mã đã được dùng) | ✅ |
-| Validate Coupon | Kiểm tra mã hợp lệ (hạn dùng, số lượt, điều kiện đơn tối thiểu) trên giỏ hàng hiện tại | ✅ |
-| Apply Coupon | Áp dụng mã giảm giá khi checkout (`couponCode` trong Create Order), hoàn lượt dùng khi hủy đơn | ✅ |
+| Feature | Description | Status |
+| --- | --- | --- |
+| CRUD Coupon (Admin) | Manage discount codes (soft delete by deactivating if the code has already been used) | ✅ |
+| Validate Coupon | Check whether a code is valid (expiry date, usage limit, minimum order value) against the current cart | ✅ |
+| Apply Coupon | Apply a discount code at checkout (`couponCode` in Create Order), restore the usage count when an order is canceled | ✅ |
 
-### 8. Payment nâng cao (mở rộng)
+### 8. Advanced Payment (extension)
 
-| Chức năng | Mô tả | Trạng thái |
-|---|---|---|
-| VNPay Integration | Tạo giao dịch, xử lý callback | ⬜ |
-| Stripe Integration | Tạo giao dịch, xử lý webhook | ⬜ |
-| Verify Transaction | Xác thực kết quả thanh toán từ gateway | ⬜ |
+| Feature | Description | Status |
+| --- | --- | --- |
+| VNPay Integration | Create transactions, handle callbacks | ⬜ |
+| Stripe Integration | Create transactions, handle webhooks | ⬜ |
+| Verify Transaction | Verify payment results from the gateway | ⬜ |
 
-## Roadmap phát triển
+### 9. Dockerization (extension)
+
+| Feature | Description | Status |
+| --- | --- | --- |
+| Dockerfile | Multi-stage build (SDK image to build, ASP.NET image to run) | ✅ |
+| Layer caching | Copy `.csproj` files and restore first to reuse the NuGet cache | ✅ |
+| `.dockerignore` | Exclude `bin/`, `obj/`, `.vs/` from the build context | ✅ |
+
+## Running with Docker
+
+Build the image:
+
+```bash
+docker build -t mille-api .
+```
+Push to a registry:
+
+```bash
+docker tag mille-api <username>/mille-api:1.0
+docker push <username>/mille-api:1.0
+```
+
+## Development Roadmap
 
 ```
-1. Auth + User/Address              ✅ Done
+1. Auth + User/Address                   ✅ Done
 2. Category + Product + Variant + Image  ✅ Done
-3. Cart                             ✅ Done
-4. Order                            ✅ Done
-5. Payment (COD)                    ✅ Done
-6. Review                          ✅ Done
-7. Coupon                          ✅ Done
-8. Payment nâng cao (VNPay/Stripe)
-9. Redis caching (mở rộng)
-10. Docker hóa (mở rộng)
+3. Cart                                  ✅ Done
+4. Order                                 ✅ Done
+5. Payment (COD)                         ✅ Done
+6. Review                                ✅ Done
+7. Coupon                                ✅ Done
+8. Advanced Payment (VNPay/Stripe)
+9. Redis caching (extension)
+10. Dockerization (extension)            ✅ Done
 ```
